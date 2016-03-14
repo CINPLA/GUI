@@ -295,6 +295,16 @@
               file="Source/Audio/AudioComponent.h"/>
       </GROUP>
       <GROUP id="yQmqZWk" name="Processors">
+        <GROUP id="{C99E3A4A-3AA3-57B1-8E38-B023AB4E6D9B}" name="SpikePositionNode">
+          <FILE id="kvtWxb" name="SpikePositionEditor.cpp" compile="1" resource="0"
+                file="Source/Processors/SpikePositionNode/SpikePositionEditor.cpp"/>
+          <FILE id="belkvz" name="SpikePositionEditor.h" compile="0" resource="0"
+                file="Source/Processors/SpikePositionNode/SpikePositionEditor.h"/>
+          <FILE id="K5h36o" name="SpikePositionNode.cpp" compile="1" resource="0"
+                file="Source/Processors/SpikePositionNode/SpikePositionNode.cpp"/>
+          <FILE id="XFopdc" name="SpikePositionNode.h" compile="0" resource="0"
+                file="Source/Processors/SpikePositionNode/SpikePositionNode.h"/>
+        </GROUP>
         <GROUP id="{01C8D4B9-6D75-255D-B464-C93D4683C411}" name="OscNode">
           <FILE id="sR1w6E" name="OscEditor.cpp" compile="1" resource="0" file="Source/Processors/OscNode/OscEditor.cpp"/>
           <FILE id="bSE1P0" name="OscEditor.h" compile="0" resource="0" file="Source/Processors/OscNode/OscEditor.h"/>

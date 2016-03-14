@@ -93,6 +93,7 @@ ProcessorList::ProcessorList()
     // sinks->addSubItem(new ProcessorListItem("FPGA Output"));
     sinks->addSubItem(new ProcessorListItem("Pulse Pal"));
     sinks->addSubItem(new ProcessorListItem("Position Tracker"));
+	sinks->addSubItem(new ProcessorListItem("Spike Position Node"));
 
     ProcessorListItem* utilities = new ProcessorListItem("Utilities");
     utilities->addSubItem(new ProcessorListItem("Splitter"));

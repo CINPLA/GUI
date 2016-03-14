@@ -32,6 +32,9 @@
     <Filter Include="open-ephys\Source\Processors">
       <UniqueIdentifier>{3DDEC88C-BAA5-2DDA-A59F-0FB74070AB82}</UniqueIdentifier>
     </Filter>
+    <Filter Include="open-ephys\Source\Processors\SpikePositionNode">
+      <UniqueIdentifier>{2A84722E-39DD-AA2D-E461-037604A1E765}</UniqueIdentifier>
+    </Filter>
     <Filter Include="open-ephys\Source\Processors\OscNode">
       <UniqueIdentifier>{93614AF4-0D25-88A1-3EC6-6C11EEFF26A3}</UniqueIdentifier>
     </Filter>
@@ -459,6 +462,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Audio\AudioComponent.cpp">
       <Filter>open-ephys\Source\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Processors\SpikePositionNode\SpikePositionEditor.cpp">
+      <Filter>open-ephys\Source\Processors\SpikePositionNode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Processors\SpikePositionNode\SpikePositionNode.cpp">
+      <Filter>open-ephys\Source\Processors\SpikePositionNode</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Processors\OscNode\OscEditor.cpp">
       <Filter>open-ephys\Source\Processors\OscNode</Filter>
@@ -2075,6 +2084,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Audio\AudioComponent.h">
       <Filter>open-ephys\Source\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Processors\SpikePositionNode\SpikePositionEditor.h">
+      <Filter>open-ephys\Source\Processors\SpikePositionNode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Processors\SpikePositionNode\SpikePositionNode.h">
+      <Filter>open-ephys\Source\Processors\SpikePositionNode</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Processors\OscNode\OscEditor.h">
       <Filter>open-ephys\Source\Processors\OscNode</Filter>

@@ -55,6 +55,8 @@ OBJECTS := \
   $(OBJDIR)/AccessClass_de9602d5.o \
   $(OBJDIR)/PracticalSocket_2574ecc8.o \
   $(OBJDIR)/AudioComponent_521bd9c9.o \
+  $(OBJDIR)/SpikePositionEditor_a9b0ed59.o \
+  $(OBJDIR)/SpikePositionNode_ba38a92e.o \
   $(OBJDIR)/OscEditor_2185e39.o \
   $(OBJDIR)/OscNode_ad86d20e.o \
   $(OBJDIR)/OscServer_f207910f.o \
@@ -231,6 +233,16 @@ $(OBJDIR)/PracticalSocket_2574ecc8.o: ../../Source/Network/PracticalSocket.cpp
 $(OBJDIR)/AudioComponent_521bd9c9.o: ../../Source/Audio/AudioComponent.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling AudioComponent.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/SpikePositionEditor_a9b0ed59.o: ../../Source/Processors/SpikePositionNode/SpikePositionEditor.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling SpikePositionEditor.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/SpikePositionNode_ba38a92e.o: ../../Source/Processors/SpikePositionNode/SpikePositionNode.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling SpikePositionNode.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/OscEditor_2185e39.o: ../../Source/Processors/OscNode/OscEditor.cpp
