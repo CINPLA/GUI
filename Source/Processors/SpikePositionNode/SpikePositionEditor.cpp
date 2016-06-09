@@ -82,7 +82,7 @@ SpikePositionEditor::SpikePositionEditor(GenericProcessor* parentNode, bool useD
     testButton->setRadius(3.0f); // sets the radius of the button's corners
     testButton->setBounds(200, 80, 80, 20); // sets the x position, y position, width, and height of the button
     testButton->addListener(this); // allows the editor to respond to clicks
-    testButton->setClickingTogglesState(true); // makes the button toggle its state when clicked
+    testButton->setClickingTogglesState(false); // makes the button toggle its state when clicked
     addAndMakeVisible(testButton); // makes the button a child component of the editor and makes it visible
 
 }
@@ -101,7 +101,7 @@ void SpikePositionEditor::labelTextChanged(Label *label)
         Value val = label->getTextValue();
 
         SpikePositionNode *p= (SpikePositionNode *)getProcessor();
-        p->setAddress(val.getValue());
+        p->setLatency(val.getValue());
     }
     if (label == ipEditLabel)
     {
@@ -127,8 +127,10 @@ void SpikePositionEditor::buttonEvent(Button *button)
     if (button == testButton)
     {
         SpikePositionNode *p= (SpikePositionNode *)getProcessor();
-        p->connectionTest();
-        button->setToggleState(false,true);
+		
+		if (!button->isDown())
+			p->connectionTest();
+        //button->setToggleState(false,true);
     }
 
     if (button == transmitButton)

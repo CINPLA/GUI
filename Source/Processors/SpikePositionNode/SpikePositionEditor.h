@@ -16,7 +16,7 @@
 
 #define DEFAULT_PORT 27021
 #define DEFAULT_SERVER_PORT 9090
-#define DEFAULT_LATENCY 1
+#define DEFAULT_LATENCY 2
 
 class SpikePositionEditor : public GenericEditor, public Label::Listener
 {

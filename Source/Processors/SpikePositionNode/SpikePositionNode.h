@@ -28,11 +28,11 @@
  * 4096: 186
  * 8192: 372
  *
- * **TODO***MAKE adjustable buffer length and error message if too many spikes detected in ;atency time ****
+ * **TODO***MAKE adjustable buffer length and error message if too many spikes detected in latency time ****
  */
 #define MAX_BUFFER_LENGTH 4096
 
-
+// 20 bytes
 
 typedef struct {
 
@@ -42,11 +42,9 @@ typedef struct {
     int64_t     spikeTiming;
     uint16_t    electrodeID; // unique electrode ID (regardless electrode position in the array)
     uint16_t    sortedId;   // sorted unit ID (or 0 if unsorted)
+	float		alignment;
 
-    //uint16_t    source; // used internally, the index of the electrode in the electrode array
-
-} spikePositionObj; // 20 bytes
-
+} spikePositionObj; 
 
 class SpikePositionNode : public GenericProcessor
 {
@@ -73,8 +71,8 @@ public:
 
 
     // Setters-Getters
-    void setLatency(int latency);
-    int getLatency();
+    void setLatency(float latency);
+    float getLatency();
     void setAddress(String address);
     String getAddress();
     void setPort(int port);
@@ -99,15 +97,19 @@ private:
 	spikePositionObj m_newSpikePos;
 
     bool m_positionIsUpdated;
+	bool m_isFirstPositionReceived;
+	bool m_positionInfoSent;
     bool m_spikeUpdated;
+	bool m_maxSpikeReached;
     bool m_isStarted;
 
-    int m_latency;
+    float m_latency;
     String m_address;
     int m_port;
 
     float m_timePassed;
-	int64 m_previousMillis;
+	int64 m_previousTime;
+	int64 m_currentTime;
 
 	SpikeObject m_newSpikeObj;
 
