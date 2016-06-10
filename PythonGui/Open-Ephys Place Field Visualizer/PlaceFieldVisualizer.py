@@ -35,7 +35,7 @@ STD_HEIGHT = 1.0
 # Define colors
 grey = "#aaaaaaaaa"
 
-debug = True
+debug = False
 
 '''Socket Setup function'''
 
@@ -70,7 +70,7 @@ def streaming():
 
     global s, MAX_BUFFER_SIZE, HELLO_STR_SIZE, mapBoundariesReceived, a, listbox, x_grid, y_grid, axcolor
     global neuronIDList, neuronMapIDList, countID, sumsID, firingRates, n_received, t_curr, t_pass, neuronNumber
-    global is_streaming
+    global is_streaming, prevX, prevY
 
     while is_streaming:
         try:
@@ -97,12 +97,12 @@ def streaming():
                 (width, height) = struct.unpack('ff', data[2:10])
                 print "Width: ", width, "Heigth: ", height
 
-                if mapBoundariesReceived is False:
-                    # Create boundary matrix
-                    x_grid = np.linspace(0, width, N_GRID + 2)
-                    y_grid = np.linspace(0, height, N_GRID + 2)
-                    #                  plt.axis([0, width, 0, height])
-                    mapBoundariesReceived = True
+                # if mapBoundariesReceived is False:
+                #     # Create boundary matrix
+                #     x_grid = np.linspace(0, width, N_GRID + 2)
+                #     y_grid = np.linspace(0, height, N_GRID + 2)
+                #     #                  plt.axis([0, width, 0, height])
+                #     mapBoundariesReceived = True
 
                 spikeData = data[10:(SPIKE_POS_OBJ_SIZE*spikeReceived)+10]
 
@@ -112,10 +112,15 @@ def streaming():
                     spikeRaw = spikeData[ii*SPIKE_POS_OBJ_SIZE:(ii+1)*SPIKE_POS_OBJ_SIZE]
                     spikeStruct = spikePos.unpack(spikeRaw)
                     # print "i: ", ii, "spike info: ",spikeStruct
-
                     spikeID = spikeStruct[4]
                     spikeX = spikeStruct[0]
                     spikeY = spikeStruct[1]
+                    # print spikeX, spikeY
+
+                    if np.isnan(spikeX):
+                        spikeX = prevX
+                    if np.isnan(spikeY):
+                        spikeY = prevY
 
                     # debug: add gaussian
                     if debug:
@@ -155,6 +160,9 @@ def streaming():
 
                     # print spikeX,spikeY
                     # print 'spikeid: ', spikeID
+
+                    prevX = spikeX
+                    prevY = spikeY
 
                     if spikeID in neuronIDList:
                         indexSpike = np.where(neuronIDList == spikeID)[0]
@@ -226,14 +234,20 @@ sumsID = np.array([], dtype=np.uint64)
 firingRates = np.array([])
 
 mapBoundariesReceived = False
-x_grid = []
-y_grid = []
+# x_grid = []
+# y_grid = []
+width = 1.
+height = 1.
+x_grid = np.linspace(0, width, N_GRID + 2)
+y_grid = np.linspace(0, height, N_GRID + 2)
 neuronNumber = 0
 
 t_curr = time.time()
 t_pass = time.time()
 n_received = long(0)
 
+prevX = 0
+prevY = 0
 
 # Create GUI widgets
 root = Tk()
@@ -299,7 +313,7 @@ def _update():
         max_norm = np.float(np.max(mapSelected))
         if max_norm != 0:
             mapSelected = mapSelected/max_norm
-        im = a.imshow(mapSelected, animated=True, label="Place Field", cmap='hot')  # , interpolation='nearest'
+        im = a.imshow(mapSelected.T, animated=True, label="Place Field", cmap='hot', extent=[0, 1, 1, 0])  # , interpolation='nearest'
         cbar_ax = f.add_axes([0.85, 0.15, 0.05, 0.7])
         f.colorbar(im, cax=cbar_ax)
         canvas.show()
