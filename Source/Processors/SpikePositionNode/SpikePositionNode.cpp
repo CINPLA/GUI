@@ -119,8 +119,8 @@ void SpikePositionNode::process(AudioSampleBuffer& buffer, MidiBuffer& events)
 			CoreServices::sendStatusMessage("WARNING: Maximum spike count reached: decrease latency!");
 		}
 
-        //if(m_spikeUpdated) //DEBUG && m_positionIsUpdated) //At least one event from OScNode has to be received	
-		if(m_spikeUpdated && m_positionIsUpdated)
+        if(m_spikeUpdated) //DEBUG && m_positionIsUpdated) //At least one event from OScNode has to be received	
+		//if(m_spikeUpdated && m_positionIsUpdated)
 		{ 
             // Create spikePos struct
             

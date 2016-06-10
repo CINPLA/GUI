@@ -103,6 +103,7 @@ void OscNode::process(AudioSampleBuffer& buffer, MidiBuffer& events)
     //std::cout << *buffer.getSampleData(0, 0) << std::endl;
     lock.enter();
 
+	// ADD POSITION string in the message
     int argumentCount = m_message.size();
 
     if(m_positionIsUpdated) {
