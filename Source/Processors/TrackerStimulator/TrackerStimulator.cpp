@@ -1,6 +1,6 @@
-#include "PositionTrackerStimulator.h"
+#include "TrackerStimulator.h"
 
-PositionTrackerStimulator::PositionTrackerStimulator()
+TrackerStimulator::TrackerStimulator()
 {
 
 }
