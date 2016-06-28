@@ -28,6 +28,7 @@ SpikePositionNode::SpikePositionNode()
     , m_address("localhost")
 	, m_port(DEFAULT_SERVER_PORT)
     , m_timePassed(0.0)
+	, m_currentTime(0.0)
     , m_isStarted(false)
     , m_spikeCount(0)
     , sock("localhost", DEFAULT_PORT)
@@ -102,7 +103,7 @@ void SpikePositionNode::process(AudioSampleBuffer& buffer, MidiBuffer& events)
 
 		// Check latency time
 		m_currentTime = Time::currentTimeMillis();
-		m_timePassed = float(m_currentTime - m_previousTime)/1000.0; // in seconds		
+		m_timePassed = float(m_currentTime - m_previousTime)/1000.0; // in seconds
 
 		lock.enter();
 
@@ -119,11 +120,11 @@ void SpikePositionNode::process(AudioSampleBuffer& buffer, MidiBuffer& events)
 			CoreServices::sendStatusMessage("WARNING: Maximum spike count reached: decrease latency!");
 		}
 
-        if(m_spikeUpdated) //DEBUG && m_positionIsUpdated) //At least one event from OScNode has to be received	
+        if(m_spikeUpdated) //DEBUG && m_positionIsUpdated) //At least one event from OScNode has to be received
 		//if(m_spikeUpdated && m_positionIsUpdated)
-		{ 
+		{
             // Create spikePos struct
-            
+
 			m_newSpikePos.spikeTiming = m_newSpikeObj.timestamp;
 			m_newSpikePos.electrodeID = m_newSpikeObj.electrodeID;
 			m_newSpikePos.sortedId = m_newSpikeObj.sortedId;
@@ -148,15 +149,15 @@ void SpikePositionNode::process(AudioSampleBuffer& buffer, MidiBuffer& events)
                                              String("Too many spikes have been detected: decrease latency or increase buffer size"),
                                              String("OK. Close"));*/
                 resetTransmission();
-				m_maxSpikeReached = true; 
+				m_maxSpikeReached = true;
 			}
 
-            
-            
+
+
 			if (m_timePassed >= m_latency)// & !m_maxSpikeReached)
 			{
 				sendPacket();
-				resetTransmission();	
+				resetTransmission();
 
 				// Reset StatusMessage and m_maxSpikeReached (if m_timePassed >= m_latency --> max count has not been reached)
 				if (m_maxSpikeReached)

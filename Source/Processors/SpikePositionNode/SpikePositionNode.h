@@ -46,6 +46,16 @@ typedef struct {
 
 } spikePositionObj; 
 
+
+/**
+
+  Receives spike (from spike detector or sorter) and position information (from OSCnode)
+  and it sends it via UDP to be handled form an external application
+
+  @see GenericProcessor, SpikePositionEditor
+
+*/
+
 class SpikePositionNode : public GenericProcessor
 {
 public:
@@ -119,7 +129,7 @@ private:
     void resetTransmission();
 
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SpikePositionNode);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SpikePositionNode)
 
 };
 

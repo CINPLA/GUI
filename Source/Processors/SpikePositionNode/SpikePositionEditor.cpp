@@ -101,23 +101,23 @@ void SpikePositionEditor::labelTextChanged(Label *label)
         Value val = label->getTextValue();
 
         SpikePositionNode *p= (SpikePositionNode *)getProcessor();
-        p->setLatency(val.getValue());
+        p->setLatency(float(val.getValue()));
     }
     if (label == ipEditLabel)
     {
         Value val = label->getTextValue();
 
         SpikePositionNode *p= (SpikePositionNode *)getProcessor();
-        p->setPort(val.getValue());
-        
+        p->setAddress(val.getValue());
+
     }
     if (label == portEditLabel)
     {
         Value val = label->getTextValue();
 
         SpikePositionNode *p= (SpikePositionNode *)getProcessor();
-        p->setPort(val.getValue());
-        
+        p->setPort(int(val.getValue()));
+
     }
 }
 
@@ -127,7 +127,7 @@ void SpikePositionEditor::buttonEvent(Button *button)
     if (button == testButton)
     {
         SpikePositionNode *p= (SpikePositionNode *)getProcessor();
-		
+
 		if (!button->isDown())
 			p->connectionTest();
         //button->setToggleState(false,true);
@@ -168,4 +168,3 @@ void SpikePositionEditor::loadCustomParameters(XmlElement *parametersAsXml)
         }
     }
 }
-
