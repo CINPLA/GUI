@@ -32,6 +32,9 @@
     <Filter Include="open-ephys\Source\Processors">
       <UniqueIdentifier>{3DDEC88C-BAA5-2DDA-A59F-0FB74070AB82}</UniqueIdentifier>
     </Filter>
+    <Filter Include="open-ephys\Source\Processors\TrackerStimulator">
+      <UniqueIdentifier>{688C1589-526A-6581-7141-DBB6439266D2}</UniqueIdentifier>
+    </Filter>
     <Filter Include="open-ephys\Source\Processors\SpikePositionNode">
       <UniqueIdentifier>{2A84722E-39DD-AA2D-E461-037604A1E765}</UniqueIdentifier>
     </Filter>
@@ -462,6 +465,15 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Audio\AudioComponent.cpp">
       <Filter>open-ephys\Source\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Processors\TrackerStimulator\TrackerStimulator.cpp">
+      <Filter>open-ephys\Source\Processors\TrackerStimulator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Processors\TrackerStimulator\TrackerStimulatorCanvas.cpp">
+      <Filter>open-ephys\Source\Processors\TrackerStimulator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Processors\TrackerStimulator\TrackerStimulatorEditor.cpp">
+      <Filter>open-ephys\Source\Processors\TrackerStimulator</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Processors\SpikePositionNode\SpikePositionEditor.cpp">
       <Filter>open-ephys\Source\Processors\SpikePositionNode</Filter>
@@ -2084,6 +2096,15 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Audio\AudioComponent.h">
       <Filter>open-ephys\Source\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Processors\TrackerStimulator\TrackerStimulator.h">
+      <Filter>open-ephys\Source\Processors\TrackerStimulator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Processors\TrackerStimulator\TrackerStimulatorCanvas.h">
+      <Filter>open-ephys\Source\Processors\TrackerStimulator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Processors\TrackerStimulator\TrackerStimulatorEditor.h">
+      <Filter>open-ephys\Source\Processors\TrackerStimulator</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Processors\SpikePositionNode\SpikePositionEditor.h">
       <Filter>open-ephys\Source\Processors\SpikePositionNode</Filter>

@@ -271,6 +271,9 @@
     <ClCompile Include="..\..\Source\AccessClass.cpp"/>
     <ClCompile Include="..\..\Source\Network\PracticalSocket.cpp"/>
     <ClCompile Include="..\..\Source\Audio\AudioComponent.cpp"/>
+    <ClCompile Include="..\..\Source\Processors\TrackerStimulator\TrackerStimulator.cpp"/>
+    <ClCompile Include="..\..\Source\Processors\TrackerStimulator\TrackerStimulatorCanvas.cpp"/>
+    <ClCompile Include="..\..\Source\Processors\TrackerStimulator\TrackerStimulatorEditor.cpp"/>
     <ClCompile Include="..\..\Source\Processors\SpikePositionNode\SpikePositionEditor.cpp"/>
     <ClCompile Include="..\..\Source\Processors\SpikePositionNode\SpikePositionNode.cpp"/>
     <ClCompile Include="..\..\Source\Processors\OscNode\OscEditor.cpp"/>
@@ -1526,6 +1529,9 @@
     <ClInclude Include="..\..\Source\AccessClass.h"/>
     <ClInclude Include="..\..\Source\Network\PracticalSocket.h"/>
     <ClInclude Include="..\..\Source\Audio\AudioComponent.h"/>
+    <ClInclude Include="..\..\Source\Processors\TrackerStimulator\TrackerStimulator.h"/>
+    <ClInclude Include="..\..\Source\Processors\TrackerStimulator\TrackerStimulatorCanvas.h"/>
+    <ClInclude Include="..\..\Source\Processors\TrackerStimulator\TrackerStimulatorEditor.h"/>
     <ClInclude Include="..\..\Source\Processors\SpikePositionNode\SpikePositionEditor.h"/>
     <ClInclude Include="..\..\Source\Processors\SpikePositionNode\SpikePositionNode.h"/>
     <ClInclude Include="..\..\Source\Processors\OscNode\OscEditor.h"/>

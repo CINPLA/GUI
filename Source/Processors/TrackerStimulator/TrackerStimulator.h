@@ -5,8 +5,14 @@
 #include "../GenericProcessor/GenericProcessor.h"
 #include "../Serial/PulsePal.h"
 
+#define DEF_PHASE_DURATION 100
+#define DEF_INTER_PHASE 50
+#define DEF_REPETITIONS 1
+#define DEF_VOLTAGE 5
+#define DEF_FREQ 2
 
-class TrackerStimulator : GenericProcessor
+
+class TrackerStimulator : public GenericProcessor
 {
 
 public:
@@ -30,6 +36,10 @@ public:
     float getWidth() const;
     float getHeight() const;
 
+    float getCx() const;
+    float getCy() const;
+    float getCradius() const;
+
     void setCx(float cx);
     void setCy(float cy);
     void setCradius(float radius);
@@ -42,11 +52,14 @@ public:
     void setNegFirst(bool negFirst);
     void setPhaseDuration(int phaseDuration);
     void setInterPhaseInt(int interPhaseInt);
+    void setVoltage(float voltage);
+    void setRepetitions(int rep);
 
-    void clearPositionUpdated();
-    bool positionIsUpdated() const;
+    void clearPositionDisplayedUpdated();
+    bool positionDisplayedIsUpdated() const;
 
     bool isSink(); //get the color correct
+    bool isReady();
 
 
 
@@ -60,6 +73,7 @@ private:
     float m_width;
     float m_height;
     bool m_positionIsUpdated;
+    bool m_positionDisplayedIsUpdated;
 
     // Target Circle params
     float m_cx;
@@ -70,7 +84,6 @@ private:
     float m_stimFreq;
     int m_stimElectrode;
     bool m_isUniform;
-    bool m_isOn;
 
     // Pulse params
     bool m_isBiphasic;
@@ -78,6 +91,7 @@ private:
     int m_phaseDuration; // us
     int m_interPhaseInt; // us
     int m_repetitions;
+    float m_voltage; // V
 
     // PULSE PAL
     PulsePal m_pulsePal;
@@ -88,7 +102,7 @@ private:
 
 };
 
-inline bool PositionTracker::isSink()
+inline bool TrackerStimulator::isSink()
 {
     return true;
 }

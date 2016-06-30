@@ -7,9 +7,10 @@
 #include "../Editors/GenericEditor.h"
 
 class TrackerStimulatorCanvas : public Visualizer,
-        public ComboBox::Listener,
         public Button::Listener,
+        public Label::Listener,
         public KeyListener
+//        public ComboBox::Listener,
 {
 public:
     TrackerStimulatorCanvas(TrackerStimulator* trackerStimulator);
@@ -18,14 +19,17 @@ public:
     void paint (Graphics&);
     void resized();
     void clear();
+    void initButtons();
+    void initLabels();
+
+    TrackerStimulator* getProcessor();
+
     // KeyListener interface
     virtual bool keyPressed(const KeyPress &key, Component *originatingComponent);
 
     // Listener interface
     virtual void buttonClicked(Button* button);
-
-    // Listener interface
-    virtual void comboBoxChanged(ComboBox *comboBoxThatHasChanged);
+    virtual void labelTextChanged(Label *label) override;
 
     // Visualizer interface
     virtual void refreshState();
@@ -43,7 +47,42 @@ private:
     float m_width;
     float m_height;
 
+    float m_current_cx;
+    float m_current_cy;
+    float m_current_crad;
+
+    bool m_circleToDraw;
+    bool m_newCircle;
+
     ScopedPointer<UtilityButton> clearButton;
+    ScopedPointer<UtilityButton> drawButton;
+    ScopedPointer<UtilityButton> uniformButton;
+    ScopedPointer<UtilityButton> gaussianButton;
+    ScopedPointer<UtilityButton> negFirstButton;
+    ScopedPointer<UtilityButton> posFirstButton;
+
+    // Label with non-editable text
+    ScopedPointer<Label> cxLabel;
+    ScopedPointer<Label> cyLabel;
+    ScopedPointer<Label> cradLabel;
+    ScopedPointer<Label> fmaxLabel;
+    ScopedPointer<Label> elecLabel;
+    ScopedPointer<Label> phaseLabel;
+    ScopedPointer<Label> interphaseLabel;
+    ScopedPointer<Label> voltageLabel;
+    ScopedPointer<Label> repetitionsLabel;
+
+
+    // Labels with editable test
+    ScopedPointer<Label> cxEditLabel;
+    ScopedPointer<Label> cyEditLabel;
+    ScopedPointer<Label> cradEditLabel;
+    ScopedPointer<Label> fmaxEditLabel;
+    ScopedPointer<Label> elecEditLabel;
+    ScopedPointer<Label> phaseEditLabel;
+    ScopedPointer<Label> interphaseEditLabel;
+    ScopedPointer<Label> voltageEditLabel;
+    ScopedPointer<Label> repetitionsEditLabel;
 
     //std::vector<Position> m_positions;
 
