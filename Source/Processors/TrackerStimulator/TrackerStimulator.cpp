@@ -25,18 +25,27 @@ TrackerStimulator::TrackerStimulator()
     , m_cx(0.0)
     , m_cy(0.0)
     , m_crad(0.0)
-    , m_stimFreq(0.0)
-    , m_stimElectrode(0)
-    , m_isUniform(true)
-    , m_isBiphasic(true)
-    , m_negativeFirst(true)
-    , m_phaseDuration(DEF_PHASE_DURATION)
-    , m_interPhaseInt(DEF_INTER_PHASE)
-    , m_repetitions(DEF_REPETITIONS)
-    , m_voltage(DEF_VOLTAGE)
+    , m_tot_chan(4)
+    , m_chan(0)
     , m_pulsePal()
 {
+    // Init PulsePal
+//    m_pulsePal.initialize();
+//    m_pulsePal.setDefaultParameters();
+//    m_pulsePal.updateDisplay("GUI Connected","Click for menu");
 
+    m_stimFreq = vector<float>(m_tot_chan, DEF_FREQ);
+    m_stimElectrode = vector<int>(m_tot_chan, 0);
+
+    m_phaseDuration = vector<int>(m_tot_chan, DEF_PHASE_DURATION);
+    m_interPhaseInt = vector<int>(m_tot_chan, DEF_INTER_PHASE);
+    m_repetitions = vector<int>(m_tot_chan, DEF_REPETITIONS);
+    m_voltage = vector<float>(m_tot_chan, DEF_VOLTAGE);
+
+    m_isUniform = vector<int>(m_tot_chan, 1);
+    m_isBiphasic = vector<int>(m_tot_chan, 1);
+    m_negativeFirst = vector<int>(m_tot_chan, 1);
+    int a = 5;
 }
 
 TrackerStimulator::~TrackerStimulator()
@@ -50,11 +59,6 @@ AudioProcessorEditor* TrackerStimulator::createEditor()
     return editor;
 }
 
-
-//int TrackerStimulator::getNumEventChannels()
-//{
-//    return 1;
-//}
 
 // Setters - Getters
 
@@ -86,7 +90,10 @@ float TrackerStimulator::getCradius() const
 {
     return m_crad;
 }
-
+int TrackerStimulator::getChan() const
+{
+    return m_chan;
+}
 
 void TrackerStimulator::setCx(float cx)
 {
@@ -100,44 +107,102 @@ void TrackerStimulator::setCradius(float crad)
 {
     m_crad = crad;
 }
-void TrackerStimulator::setStimFreq(float stimFreq)
+
+float TrackerStimulator::getStimFreq(int chan) const
 {
-    m_stimFreq = stimFreq;
+    return m_stimFreq[chan];
 }
-void TrackerStimulator::setStimElectrode(int stimElectrode)
+int TrackerStimulator::getStimElectrode(int chan) const
 {
-    m_stimElectrode = stimElectrode;
+    return m_stimElectrode[chan];
 }
-void TrackerStimulator::setIsUniform(bool isUniform)
+bool TrackerStimulator::getIsUniform(int chan) const
 {
-    m_isUniform = isUniform;
+    if (m_isUniform[chan])
+        return true;
+    else
+        return false;
 }
-void TrackerStimulator::setIsBiphasic(bool isBiphasic)
+bool TrackerStimulator::getIsBiphasic(int chan) const
 {
-    m_isBiphasic = isBiphasic;
+    if (m_isBiphasic[chan])
+        return true;
+    else
+        return false;
 }
-void TrackerStimulator::setNegFirst(bool negFirst)
+bool TrackerStimulator::getNegFirst(int chan) const
 {
-    m_negativeFirst = negFirst;
+    if (m_negativeFirst[chan])
+        return true;
+    else
+        return false;
 }
-void TrackerStimulator::setPhaseDuration(int phaseDuration)
+int TrackerStimulator::getPhaseDuration(int chan) const
 {
-    m_phaseDuration = phaseDuration;
+    return m_phaseDuration[chan];
 }
-void TrackerStimulator::setInterPhaseInt(int interPhaseInt)
+int TrackerStimulator::getInterPhaseInt(int chan) const
 {
-    m_interPhaseInt = interPhaseInt;
+    return m_interPhaseInt[chan];
 }
-void TrackerStimulator::setVoltage(float voltage)
+float TrackerStimulator::getVoltage(int chan) const
 {
-    m_voltage = voltage;
+    return m_voltage[chan];
 }
-void TrackerStimulator::setRepetitions(int rep)
+int TrackerStimulator::getRepetitions(int chan) const
 {
-    m_repetitions = rep;
+    return m_repetitions[chan];
 }
 
-
+void TrackerStimulator::setStimFreq(int chan, float stimFreq)
+{
+    m_stimFreq[chan] = stimFreq;
+}
+void TrackerStimulator::setStimElectrode(int chan, int stimElectrode)
+{
+    m_stimElectrode[chan] = stimElectrode;
+}
+void TrackerStimulator::setIsUniform(int chan, bool isUniform)
+{
+    if (isUniform)
+        m_isUniform[chan] = 1;
+    else
+        m_isUniform[chan] = 0;
+}
+void TrackerStimulator::setIsBiphasic(int chan, bool isBiphasic)
+{
+    if (isBiphasic)
+        m_isBiphasic[chan] = 1;
+    else
+        m_isBiphasic[chan] = 0;
+}
+void TrackerStimulator::setNegFirst(int chan, bool negFirst)
+{
+    if (negFirst)
+        m_negativeFirst[chan] = 1;
+    else
+        m_negativeFirst[chan] = 0;
+}
+void TrackerStimulator::setPhaseDuration(int chan, int phaseDuration)
+{
+    m_phaseDuration[chan] = phaseDuration;
+}
+void TrackerStimulator::setInterPhaseInt(int chan, int interPhaseInt)
+{
+    m_interPhaseInt[chan] = interPhaseInt;
+}
+void TrackerStimulator::setVoltage(int chan, float voltage)
+{
+    m_voltage[chan] = voltage;
+}
+void TrackerStimulator::setRepetitions(int chan, int rep)
+{
+    m_repetitions[chan] = rep;
+}
+void TrackerStimulator::setChan(int chan)
+{
+    m_chan = chan;
+}
 
 
 void TrackerStimulator::process(AudioSampleBuffer& buffer, MidiBuffer& events)
@@ -228,7 +293,7 @@ void TrackerStimulator::process(AudioSampleBuffer& buffer, MidiBuffer& events)
 
 void TrackerStimulator::handleEvent(int eventType, MidiMessage &event, int samplePosition)
 {
-
+    // Get current position
     if(eventType == BINARY_MSG) {
         const uint8* rawData = event.getRawData();
         if(event.getRawDataSize() != 6 + sizeof(float)*4) {
@@ -255,7 +320,16 @@ void TrackerStimulator::clearPositionDisplayedUpdated()
 }
 
 
-bool TrackerStimulator::updatePulsePal(){}
+bool TrackerStimulator::updatePulsePal()
+{
+    m_pulsePal.setBiphasic(m_chan, m_isBiphasic[m_chan]);
+    m_pulsePal.setPhase1Voltage(m_chan, m_voltage[m_chan]);
+    m_pulsePal.setPhase2Voltage(m_chan, m_voltage[m_chan]);
+    m_pulsePal.setPhase1Duration(m_chan, float(m_phaseDuration[m_chan])/1000.0);
+    m_pulsePal.setPhase2Duration(m_chan, float(m_phaseDuration[m_chan])/1000.0);
+    m_pulsePal.setInterPhaseInterval(m_chan, float(m_interPhaseInt[m_chan])/1000.0);
+
+}
 bool TrackerStimulator::testStimulation(){} //test from Editor
 
 

@@ -60,6 +60,11 @@ private:
     ScopedPointer<UtilityButton> gaussianButton;
     ScopedPointer<UtilityButton> negFirstButton;
     ScopedPointer<UtilityButton> posFirstButton;
+    ScopedPointer<UtilityButton> biphasicButton;
+    ScopedPointer<UtilityButton> chan1Button;
+    ScopedPointer<UtilityButton> chan2Button;
+    ScopedPointer<UtilityButton> chan3Button;
+    ScopedPointer<UtilityButton> chan4Button;
 
     // Label with non-editable text
     ScopedPointer<Label> cxLabel;
@@ -67,6 +72,8 @@ private:
     ScopedPointer<Label> cradLabel;
     ScopedPointer<Label> fmaxLabel;
     ScopedPointer<Label> elecLabel;
+    ScopedPointer<Label> pulsePalLabel;
+    ScopedPointer<Label> pulsePalStatusLabel;
     ScopedPointer<Label> phaseLabel;
     ScopedPointer<Label> interphaseLabel;
     ScopedPointer<Label> voltageLabel;

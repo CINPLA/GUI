@@ -5,6 +5,8 @@
 #include "../GenericProcessor/GenericProcessor.h"
 #include "../Serial/PulsePal.h"
 
+#include <vector>
+
 #define DEF_PHASE_DURATION 100
 #define DEF_INTER_PHASE 50
 #define DEF_REPETITIONS 1
@@ -40,20 +42,34 @@ public:
     float getCy() const;
     float getCradius() const;
 
+    int getChan() const;
+
     void setCx(float cx);
     void setCy(float cy);
     void setCradius(float radius);
 
-    void setStimFreq(float stimFreq);
-    void setStimElectrode(int stimElectrode);
-    void setIsUniform(bool isUniform);
+    float getStimFreq(int chan) const;
+    int getStimElectrode(int chan) const;
+    bool getIsUniform(int chan) const;
 
-    void setIsBiphasic(bool isBiphasic);
-    void setNegFirst(bool negFirst);
-    void setPhaseDuration(int phaseDuration);
-    void setInterPhaseInt(int interPhaseInt);
-    void setVoltage(float voltage);
-    void setRepetitions(int rep);
+    bool getIsBiphasic(int chan) const;
+    bool getNegFirst(int chan) const;
+    int getPhaseDuration(int chan) const;
+    int getInterPhaseInt(int chan) const;
+    float getVoltage(int chan) const;
+    int getRepetitions(int chan) const;
+
+    void setStimFreq(int chan, float stimFreq);
+    void setStimElectrode(int chan, int stimElectrode);
+    void setIsUniform(int chan, bool isUniform);
+
+    void setIsBiphasic(int chan, bool isBiphasic);
+    void setNegFirst(int chan, bool negFirst);
+    void setPhaseDuration(int chan, int phaseDuration);
+    void setInterPhaseInt(int chan, int interPhaseInt);
+    void setVoltage(int chan, float voltage);
+    void setRepetitions(int chan, int rep);
+    void setChan(int chan);
 
     void clearPositionDisplayedUpdated();
     bool positionDisplayedIsUpdated() const;
@@ -81,17 +97,19 @@ private:
     float m_crad;
 
     // Stimulation params
-    float m_stimFreq;
-    int m_stimElectrode;
-    bool m_isUniform;
+    vector<float> m_stimFreq;
+    vector<int> m_stimElectrode;
+    vector<int> m_isUniform;
 
     // Pulse params
-    bool m_isBiphasic;
-    bool m_negativeFirst;
-    int m_phaseDuration; // us
-    int m_interPhaseInt; // us
-    int m_repetitions;
-    float m_voltage; // V
+    vector<int> m_isBiphasic;
+    vector<int> m_negativeFirst;
+    vector<int> m_phaseDuration; // us
+    vector<int> m_interPhaseInt; // us
+    vector<int> m_repetitions;
+    vector<float> m_voltage; // V
+    int m_chan;
+    int m_tot_chan;
 
     // PULSE PAL
     PulsePal m_pulsePal;

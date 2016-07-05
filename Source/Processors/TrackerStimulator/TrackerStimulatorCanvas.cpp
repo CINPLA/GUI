@@ -130,18 +130,27 @@ void TrackerStimulatorCanvas::resized()
     clearButton->setBounds(getWidth() - 0.35*getWidth(), getHeight()-0.1*getHeight(), 0.1*getWidth(),0.05*getHeight());
 
     drawButton->setBounds(getWidth() - 0.2*getWidth(), 0.05*getHeight(), 0.18*getWidth(),0.07*getHeight());
-    uniformButton->setBounds(getWidth() - 0.2*getWidth(), 0.4*getHeight(), 0.09*getWidth(),0.03*getHeight());
-    gaussianButton->setBounds(getWidth() - 0.2*getWidth() + 0.08*getWidth(), 0.4*getHeight(), 0.09*getWidth(),0.03*getHeight());
-    negFirstButton->setBounds(getWidth() - 0.2*getWidth(), 0.7*getHeight(), 0.09*getWidth(),0.03*getHeight());
-    posFirstButton->setBounds(getWidth() - 0.2*getWidth() + 0.08*getWidth(), 0.7*getHeight(), 0.09*getWidth(),0.03*getHeight());
+
+    uniformButton->setBounds(getWidth() - 0.2*getWidth(), 0.35*getHeight(), 0.09*getWidth(),0.03*getHeight());
+    gaussianButton->setBounds(getWidth() - 0.2*getWidth() + 0.09*getWidth(), 0.35*getHeight(), 0.09*getWidth(),0.03*getHeight());
+
+    biphasicButton->setBounds(getWidth() - 0.2*getWidth(), 0.6*getHeight(), 0.18*getWidth(),0.03*getHeight());
+    negFirstButton->setBounds(getWidth() - 0.2*getWidth(), 0.65*getHeight(), 0.09*getWidth(),0.03*getHeight());
+    posFirstButton->setBounds(getWidth() - 0.2*getWidth() + 0.09*getWidth(), 0.65*getHeight(), 0.09*getWidth(),0.03*getHeight());
+    chan1Button->setBounds(getWidth() - 0.2*getWidth(), 0.7*getHeight(), 0.045*getWidth(),0.03*getHeight());
+    chan2Button->setBounds(getWidth() - 0.2*getWidth() + 0.045*getWidth(), 0.7*getHeight(), 0.045*getWidth(),0.03*getHeight());
+    chan3Button->setBounds(getWidth() - 0.2*getWidth() + 0.09 *getWidth(), 0.7*getHeight(), 0.045*getWidth(),0.03*getHeight());
+    chan4Button->setBounds(getWidth() - 0.2*getWidth() + 0.135*getWidth(), 0.7*getHeight(), 0.045*getWidth(),0.03*getHeight());
+
+
 
     // Static Labels
     cxLabel->setBounds(getWidth() - 0.2*getWidth(), 0.15*getHeight(), 0.1*getWidth(),0.04*getHeight());
     cyLabel->setBounds(getWidth() - 0.2*getWidth(), 0.2*getHeight(), 0.1*getWidth(),0.04*getHeight());
     cradLabel->setBounds(getWidth() - 0.2*getWidth(), 0.25*getHeight(), 0.1*getWidth(),0.04*getHeight());
 
-    fmaxLabel->setBounds(getWidth() - 0.2*getWidth(), 0.45*getHeight(), 0.1*getWidth(),0.04*getHeight());
-    elecLabel->setBounds(getWidth() - 0.2*getWidth(), 0.55*getHeight(), 0.1*getWidth(),0.04*getHeight());
+    fmaxLabel->setBounds(getWidth() - 0.2*getWidth(), 0.4*getHeight(), 0.1*getWidth(),0.04*getHeight());
+    elecLabel->setBounds(getWidth() - 0.2*getWidth(), 0.45*getHeight(), 0.1*getWidth(),0.04*getHeight());
 
     phaseLabel->setBounds(getWidth() - 0.2*getWidth(), 0.75*getHeight(), 0.1*getWidth(),0.04*getHeight());
     interphaseLabel->setBounds(getWidth() - 0.2*getWidth(), 0.8*getHeight(), 0.1*getWidth(),0.04*getHeight());
@@ -153,8 +162,8 @@ void TrackerStimulatorCanvas::resized()
     cyEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.2*getHeight(), 0.08*getWidth(),0.04*getHeight());
     cradEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.25*getHeight(), 0.08*getWidth(),0.04*getHeight());
 
-    fmaxEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.45*getHeight(), 0.08*getWidth(),0.04*getHeight());
-    elecEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.55*getHeight(), 0.08*getWidth(),0.04*getHeight());
+    fmaxEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.4*getHeight(), 0.08*getWidth(),0.04*getHeight());
+    elecEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.45*getHeight(), 0.08*getWidth(),0.04*getHeight());
 
     phaseEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.75*getHeight(), 0.08*getWidth(),0.04*getHeight());
     interphaseEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.8*getHeight(), 0.08*getWidth(),0.04*getHeight());
@@ -190,7 +199,7 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
             if (gaussianButton->getToggleState()==true)
                 gaussianButton->triggerClick();
 
-            processor->setIsUniform(true);
+            processor->setIsUniform(processor->getChan(), true);
         }
         else
             if (gaussianButton->getToggleState()==false)
@@ -202,11 +211,19 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
             if (uniformButton->getToggleState()==true)
                 uniformButton->triggerClick();
 
-            processor->setIsUniform(false);
+            processor->setIsUniform(processor->getChan(), false);
         }
         else
             if (uniformButton->getToggleState()==false)
                 uniformButton->triggerClick();
+
+    }
+    else if (button == biphasicButton)
+    {
+        if (button->getToggleState()==true)
+            processor->setIsBiphasic(processor->getChan(), true);
+        else
+            processor->setIsBiphasic(processor->getChan(), false);
     }
     else if (button == negFirstButton)
     {
@@ -214,7 +231,7 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
             if (posFirstButton->getToggleState()==true)
                 posFirstButton->triggerClick();
 
-            processor->setNegFirst(true);
+            processor->setNegFirst(processor->getChan(), true);
         }
         else
             if (posFirstButton->getToggleState()==false)
@@ -226,11 +243,215 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
             if (negFirstButton->getToggleState()==true)
                 negFirstButton->triggerClick();
 
-            processor->setNegFirst(false);
+            processor->setNegFirst(processor->getChan(), false);
         }
         else
             if (negFirstButton->getToggleState()==false)
                 negFirstButton->triggerClick();
+    }
+    else if (button == chan1Button)
+    {
+        if (button->getToggleState()==true){
+            if (chan2Button->getToggleState()==true)
+                chan2Button->triggerClick();
+            if (chan3Button->getToggleState()==true)
+                chan3Button->triggerClick();
+            if (chan4Button->getToggleState()==true)
+                chan4Button->triggerClick();
+
+            processor->setChan(0);
+
+            // retrieve and set label values
+            fmaxEditLabel->setText(String(processor->getStimFreq(0)), dontSendNotification);
+            elecEditLabel->setText(String(processor->getStimElectrode(0)), dontSendNotification);
+            phaseEditLabel->setText(String(processor->getPhaseDuration(0)), dontSendNotification);
+            interphaseEditLabel->setText(String(processor->getInterPhaseInt(0)), dontSendNotification);
+            voltageEditLabel->setText(String(processor->getVoltage(0)), dontSendNotification);
+            repetitionsEditLabel->setText(String(processor->getRepetitions(0)), dontSendNotification);
+
+            // toggle buttons
+            if (processor->getIsUniform(0) == true){
+                if (uniformButton->getToggleState()==false)
+                    uniformButton->triggerClick();
+            } else {
+                if (uniformButton->getToggleState()==true)
+                    uniformButton->triggerClick();
+            }
+
+            if (processor->getIsBiphasic(0) == true) {
+                if (biphasicButton->getToggleState()==false)
+                    biphasicButton->triggerClick();
+            } else {
+                if (biphasicButton->getToggleState()==true)
+                    biphasicButton->triggerClick();
+            }
+
+            if (processor->getNegFirst(0) == true) {
+                if (negFirstButton->getToggleState()==false)
+                    negFirstButton->triggerClick();
+            } else {
+                if (negFirstButton->getToggleState()==true)
+                    negFirstButton->triggerClick();
+            }
+
+
+        }
+        else
+            if (chan1Button->getToggleState()==false && chan2Button->getToggleState() == false
+                    && chan3Button->getToggleState()==false && chan4Button->getToggleState() == false)
+                chan1Button->triggerClick();
+    }
+    else if (button == chan2Button)
+    {
+        if (button->getToggleState()==true){
+            if (chan1Button->getToggleState()==true)
+                chan1Button->triggerClick();
+            if (chan3Button->getToggleState()==true)
+                chan3Button->triggerClick();
+            if (chan4Button->getToggleState()==true)
+                chan4Button->triggerClick();
+
+            processor->setChan(1);
+
+            // retrieve and set label values
+            fmaxEditLabel->setText(String(processor->getStimFreq(1)), dontSendNotification);
+            elecEditLabel->setText(String(processor->getStimElectrode(1)), dontSendNotification);
+            phaseEditLabel->setText(String(processor->getPhaseDuration(1)), dontSendNotification);
+            interphaseEditLabel->setText(String(processor->getInterPhaseInt(1)), dontSendNotification);
+            voltageEditLabel->setText(String(processor->getVoltage(1)), dontSendNotification);
+            repetitionsEditLabel->setText(String(processor->getRepetitions(1)), dontSendNotification);
+
+            // toggle buttons
+            if (processor->getIsUniform(1) == true){
+                if (uniformButton->getToggleState()==false)
+                    uniformButton->triggerClick();
+            } else {
+                if (uniformButton->getToggleState()==true)
+                    uniformButton->triggerClick();
+            }
+
+            if (processor->getIsBiphasic(1) == true) {
+                if (biphasicButton->getToggleState()==false)
+                    biphasicButton->triggerClick();
+            } else {
+                if (biphasicButton->getToggleState()==true)
+                    biphasicButton->triggerClick();
+            }
+
+            if (processor->getNegFirst(1) == true) {
+                if (negFirstButton->getToggleState()==false)
+                    negFirstButton->triggerClick();
+            } else {
+                if (negFirstButton->getToggleState()==true)
+                    negFirstButton->triggerClick();
+            }
+
+
+        }
+        else
+            if (chan1Button->getToggleState()==false && chan2Button->getToggleState() == false
+                    && chan3Button->getToggleState()==false && chan4Button->getToggleState() == false)
+                chan2Button->triggerClick();
+    }
+    else if (button == chan3Button)
+    {
+        if (button->getToggleState()==true){
+            if (chan2Button->getToggleState()==true)
+                chan2Button->triggerClick();
+            if (chan1Button->getToggleState()==true)
+                chan1Button->triggerClick();
+            if (chan4Button->getToggleState()==true)
+                chan4Button->triggerClick();
+
+            processor->setChan(2);
+
+            // retrieve and set label values
+            fmaxEditLabel->setText(String(processor->getStimFreq(2)), dontSendNotification);
+            elecEditLabel->setText(String(processor->getStimElectrode(2)), dontSendNotification);
+            phaseEditLabel->setText(String(processor->getPhaseDuration(2)), dontSendNotification);
+            interphaseEditLabel->setText(String(processor->getInterPhaseInt(2)), dontSendNotification);
+            voltageEditLabel->setText(String(processor->getVoltage(2)), dontSendNotification);
+            repetitionsEditLabel->setText(String(processor->getRepetitions(2)), dontSendNotification);
+
+            // toggle buttons
+            if (processor->getIsUniform(2) == true){
+                if (uniformButton->getToggleState()==false)
+                    uniformButton->triggerClick();
+            } else {
+                if (uniformButton->getToggleState()==true)
+                    uniformButton->triggerClick();
+            }
+
+            if (processor->getIsBiphasic(2) == true) {
+                if (biphasicButton->getToggleState()==false)
+                    biphasicButton->triggerClick();
+            } else {
+                if (biphasicButton->getToggleState()==true)
+                    biphasicButton->triggerClick();
+            }
+
+            if (processor->getNegFirst(2) == true) {
+                if (negFirstButton->getToggleState()==false)
+                    negFirstButton->triggerClick();
+            } else {
+                if (negFirstButton->getToggleState()==true)
+                    negFirstButton->triggerClick();
+            }
+        }
+        else
+            if (chan1Button->getToggleState()==false && chan2Button->getToggleState() == false
+                    && chan3Button->getToggleState()==false && chan4Button->getToggleState() == false)
+                chan3Button->triggerClick();
+    }
+    else if (button == chan4Button)
+    {
+        if (button->getToggleState()==true){
+            if (chan2Button->getToggleState()==true)
+                chan2Button->triggerClick();
+            if (chan3Button->getToggleState()==true)
+                chan3Button->triggerClick();
+            if (chan1Button->getToggleState()==true)
+                chan1Button->triggerClick();
+
+            processor->setChan(3);
+
+            // retrieve and set label values
+            fmaxEditLabel->setText(String(processor->getStimFreq(3)), dontSendNotification);
+            elecEditLabel->setText(String(processor->getStimElectrode(3)), dontSendNotification);
+            phaseEditLabel->setText(String(processor->getPhaseDuration(3)), dontSendNotification);
+            interphaseEditLabel->setText(String(processor->getInterPhaseInt(3)), dontSendNotification);
+            voltageEditLabel->setText(String(processor->getVoltage(3)), dontSendNotification);
+            repetitionsEditLabel->setText(String(processor->getRepetitions(3)), dontSendNotification);
+
+            // toggle buttons
+            if (processor->getIsUniform(3) == true){
+                if (uniformButton->getToggleState()==false)
+                    uniformButton->triggerClick();
+            } else {
+                if (uniformButton->getToggleState()==true)
+                    uniformButton->triggerClick();
+            }
+
+            if (processor->getIsBiphasic(3) == true) {
+                if (biphasicButton->getToggleState()==false)
+                    biphasicButton->triggerClick();
+            } else {
+                if (biphasicButton->getToggleState()==true)
+                    biphasicButton->triggerClick();
+            }
+
+            if (processor->getNegFirst(3) == true) {
+                if (negFirstButton->getToggleState()==false)
+                    negFirstButton->triggerClick();
+            } else {
+                if (negFirstButton->getToggleState()==true)
+                    negFirstButton->triggerClick();
+            }
+        }
+        else
+            if (chan1Button->getToggleState()==false && chan2Button->getToggleState() == false
+                    && chan3Button->getToggleState()==false && chan4Button->getToggleState() == false)
+                chan4Button->triggerClick();
     }
 
 }
@@ -255,32 +476,32 @@ void TrackerStimulatorCanvas::labelTextChanged(Label *label)
     if (label == fmaxEditLabel)
     {
         Value val = label->getTextValue();
-        processor->setStimFreq(float(val.getValue()));
+        processor->setStimFreq(processor->getChan(), float(val.getValue()));
     }
     if (label == elecEditLabel)
     {
         Value val = label->getTextValue();
-        processor->setStimElectrode(int(val.getValue()));
+        processor->setStimElectrode(processor->getChan(), int(val.getValue()));
     }
     if (label == phaseEditLabel)
     {
         Value val = label->getTextValue();
-        processor->setPhaseDuration(int(val.getValue()));
+        processor->setPhaseDuration(processor->getChan(), int(val.getValue()));
     }
     if (label == interphaseEditLabel)
     {
         Value val = label->getTextValue();
-        processor->setInterPhaseInt(int(val.getValue()));
+        processor->setInterPhaseInt(processor->getChan(), int(val.getValue()));
     }
     if (label == voltageEditLabel)
     {
         Value val = label->getTextValue();
-        processor->setVoltage(float(val.getValue()));
+        processor->setVoltage(processor->getChan(), float(val.getValue()));
     }
     if (label == repetitionsEditLabel)
     {
         Value val = label->getTextValue();
-        processor->setRepetitions(int(val.getValue()));
+        processor->setRepetitions(processor->getChan(), int(val.getValue()));
     }
 }
 
@@ -342,6 +563,13 @@ void TrackerStimulatorCanvas::initButtons()
     gaussianButton->setClickingTogglesState(true);
     addAndMakeVisible(gaussianButton);
 
+    biphasicButton = new UtilityButton("biphasic", Font("Small Text", 13, Font::plain));
+    biphasicButton->setRadius(3.0f);
+    biphasicButton->addListener(this);
+    biphasicButton->setClickingTogglesState(true);
+    biphasicButton->triggerClick();
+    addAndMakeVisible(biphasicButton);
+
     negFirstButton = new UtilityButton("neg", Font("Small Text", 13, Font::plain));
     negFirstButton->setRadius(3.0f);
     negFirstButton->addListener(this);
@@ -354,6 +582,31 @@ void TrackerStimulatorCanvas::initButtons()
     posFirstButton->addListener(this);
     posFirstButton->setClickingTogglesState(true);
     addAndMakeVisible(posFirstButton);
+
+    chan1Button = new UtilityButton("1", Font("Small Text", 13, Font::plain));
+    chan1Button->setRadius(3.0f);
+    chan1Button->addListener(this);
+    chan1Button->setClickingTogglesState(true);
+    chan1Button->triggerClick();
+    addAndMakeVisible(chan1Button);
+
+    chan2Button = new UtilityButton("2", Font("Small Text", 13, Font::plain));
+    chan2Button->setRadius(3.0f);
+    chan2Button->addListener(this);
+    chan2Button->setClickingTogglesState(true);
+    addAndMakeVisible(chan2Button);
+
+    chan3Button = new UtilityButton("3", Font("Small Text", 13, Font::plain));
+    chan3Button->setRadius(3.0f);
+    chan3Button->addListener(this);
+    chan3Button->setClickingTogglesState(true);
+    addAndMakeVisible(chan3Button);
+
+    chan4Button = new UtilityButton("4", Font("Small Text", 13, Font::plain));
+    chan4Button->setRadius(3.0f);
+    chan4Button->addListener(this);
+    chan4Button->setClickingTogglesState(true);
+    addAndMakeVisible(chan4Button);
 
 }
 
@@ -384,6 +637,16 @@ void TrackerStimulatorCanvas::initLabels()
     elecLabel->setFont(Font(20));
     elecLabel->setColour(Label::textColourId, Colour(200, 255, 0));
     addAndMakeVisible(elecLabel);
+
+    pulsePalLabel = new Label("s_pp", "Pulse Pal:");
+    pulsePalLabel->setFont(Font(20));
+    pulsePalLabel->setColour(Label::textColourId, Colour(200, 255, 0));
+    addAndMakeVisible(pulsePalLabel);
+
+    pulsePalStatusLabel = new Label("s_pp", "Pulse Pal:");
+    pulsePalStatusLabel->setFont(Font(20));
+    pulsePalStatusLabel->setColour(Label::textColourId, Colour(200, 255, 0));
+    addAndMakeVisible(pulsePalStatusLabel);
 
     phaseLabel = new Label("s_phase", "phase [us]:");
     phaseLabel->setFont(Font(15));
