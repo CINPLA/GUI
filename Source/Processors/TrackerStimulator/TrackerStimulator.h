@@ -80,8 +80,16 @@ public:
 
 
 private:
+
+    CriticalSection lock;
+
     // OnOff
     bool m_isOn;
+
+    // Time
+    float m_timePassed;
+    int64 m_previousTime;
+    int64 m_currentTime;
 
     // Current Position
     float m_x;
@@ -91,7 +99,7 @@ private:
     bool m_positionIsUpdated;
     bool m_positionDisplayedIsUpdated;
 
-    // Target Circle params
+    // Target Circle params (extend to vectors)
     float m_cx;
     float m_cy;
     float m_crad;
@@ -113,6 +121,9 @@ private:
 
     // PULSE PAL
     PulsePal m_pulsePal;
+
+    // Stimulate decision
+    bool stimulate();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TrackerStimulator)
 

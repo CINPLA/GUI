@@ -26,6 +26,8 @@ TrackerStimulator::TrackerStimulator()
     , m_cy(0.0)
     , m_crad(0.0)
     , m_tot_chan(4)
+    , m_timePassed(0.0)
+    , m_currentTime(0.0)
     , m_chan(0)
     , m_pulsePal()
 {
@@ -212,79 +214,28 @@ void TrackerStimulator::process(AudioSampleBuffer& buffer, MidiBuffer& events)
 
     if (m_isOn){
 
-        // Check latency time
-//        m_currentTime = Time::currentTimeMillis();
-//        m_timePassed = float(m_currentTime - m_previousTime)/1000.0; // in seconds
+        m_currentTime = Time::currentTimeMillis();
+        m_timePassed = float(m_currentTime - m_previousTime)/1000.0; // in seconds
 
-//        lock.enter();
+        lock.enter();
 
-//        // Notify when position info is received the only the first time
-//        if (m_positionIsUpdated && !m_isFirstPositionReceived)
-//        {
-//            CoreServices::sendStatusMessage("TrackerStimulator is receiving position info.");
-//            m_isFirstPositionReceived = true;
-//        }
+        // Check if current position is within stimulation areas
+        bool stim = stimulate();
 
-//        // Notify when m_maxSpikeReached is reached
-//        if (m_maxSpikeReached)
-//        {
-//            CoreServices::sendStatusMessage("WARNING: Maximum spike count reached: decrease latency!");
-//        }
+        if (stim)
+        {
+            // Check if timePassed >= latency
+            if (m_timePassed >= float(1/m_stimFreq[m_chan]))
+            {
+                // trigger selected channel
+                m_pulsePal.triggerChannel(m_chan);
+                m_previousTime = Time::currentTimeMillis();
+                m_timePassed = 0;
+            }
 
-//        if(m_spikeUpdated) //DEBUG && m_positionIsUpdated) //At least one event from OScNode has to be received
-//            //if(m_spikeUpdated && m_positionIsUpdated)
-//        {
-//            // Create spikePos struct
+        }
 
-//            m_newSpikePos.spikeTiming = m_newSpikeObj.timestamp;
-//            m_newSpikePos.electrodeID = m_newSpikeObj.electrodeID;
-//            m_newSpikePos.sortedId = m_newSpikeObj.sortedId;
-//            m_newSpikePos.alignment = 0.0;
-
-//            m_newSpikePos.x = m_x;
-//            m_newSpikePos.y = m_y;
-
-//            // Append to Spike obj vector if not full
-//            if (m_spikeCount < m_maxSpikeCounts)
-//            {
-//                m_spikeBuffer.push_back(m_newSpikePos);
-//                m_spikeCount++;
-//                m_spikeUpdated = false;
-//            }
-//            else
-//            {
-//                // Send anyways, print error message and reset
-//                sendPacket();
-//                /*AlertWindow::showMessageBox (AlertWindow::WarningIcon,
-//                                             String("WARNING: Maximum spike count reached"),
-//                                             String("Too many spikes have been detected: decrease latency or increase buffer size"),
-//                                             String("OK. Close"));*/
-//                resetTransmission();
-//                m_maxSpikeReached = true;
-//            }
-
-
-
-//            if (m_timePassed >= m_latency)// & !m_maxSpikeReached)
-//            {
-//                sendPacket();
-//                resetTransmission();
-
-//                // Reset StatusMessage and m_maxSpikeReached (if m_timePassed >= m_latency --> max count has not been reached)
-//                if (m_maxSpikeReached)
-//                {
-//                    CoreServices::sendStatusMessage("Latency is well set.");
-//                    m_maxSpikeReached = false;
-//                }
-
-//            }
-//        }
-//        else if (m_spikeUpdated && !m_positionIsUpdated)
-//        {
-//            CoreServices::sendStatusMessage("Receiving spikes, but not position updates.");
-//        }
-
-//        lock.exit();
+        lock.exit();
 
     }
 
@@ -307,6 +258,12 @@ void TrackerStimulator::handleEvent(int eventType, MidiMessage &event, int sampl
         m_positionIsUpdated = true;
     }
 
+}
+
+bool TrackerStimulator::stimulate()
+{
+    // make decision
+    return false;
 }
 
 bool TrackerStimulator::positionDisplayedIsUpdated() const
