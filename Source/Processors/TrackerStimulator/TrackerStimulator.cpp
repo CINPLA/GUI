@@ -22,9 +22,7 @@ TrackerStimulator::TrackerStimulator()
     , m_width(1.0)
     , m_positionIsUpdated(false)
     , m_positionDisplayedIsUpdated(false)
-    , m_cx(0.0)
-    , m_cy(0.0)
-    , m_crad(0.0)
+    , m_selectedCircle(-1)
     , m_tot_chan(4)
     , m_timePassed(0.0)
     , m_currentTime(0.0)
@@ -32,9 +30,12 @@ TrackerStimulator::TrackerStimulator()
     , m_pulsePal()
 {
     // Init PulsePal
-//    m_pulsePal.initialize();
-//    m_pulsePal.setDefaultParameters();
-//    m_pulsePal.updateDisplay("GUI Connected","Click for menu");
+    m_pulsePal.initialize();
+    m_pulsePal.setDefaultParameters();
+    m_pulsePal.updateDisplay("GUI Connected","Click for menu");
+    m_pulsePalVersion = m_pulsePal.getFirmwareVersion();
+
+    m_circles = vector<Circle>();
 
     m_stimFreq = vector<float>(m_tot_chan, DEF_FREQ);
     m_stimElectrode = vector<int>(m_tot_chan, 0);
@@ -43,11 +44,12 @@ TrackerStimulator::TrackerStimulator()
     m_interPhaseInt = vector<int>(m_tot_chan, DEF_INTER_PHASE);
     m_repetitions = vector<int>(m_tot_chan, DEF_REPETITIONS);
     m_voltage = vector<float>(m_tot_chan, DEF_VOLTAGE);
+    m_voltage = vector<int>(m_tot_chan, DEF_INTER_PULSE);
 
     m_isUniform = vector<int>(m_tot_chan, 1);
     m_isBiphasic = vector<int>(m_tot_chan, 1);
     m_negativeFirst = vector<int>(m_tot_chan, 1);
-    int a = 5;
+    //int a = 5;
 }
 
 TrackerStimulator::~TrackerStimulator()
@@ -80,35 +82,44 @@ float TrackerStimulator::getHeight() const
 {
     return m_height;
 }
-float TrackerStimulator::getCx() const
+
+
+vector<Circle> TrackerStimulator::getCircles()
 {
-    return m_cx;
+    return m_circles;
 }
-float TrackerStimulator::getCy() const
+void TrackerStimulator::addCircle(Circle c)
 {
-    return m_cy;
+    m_circles.push_back(c);
 }
-float TrackerStimulator::getCradius() const
+void TrackerStimulator::editCircle(int ind, float x, float y, float rad, bool on)
 {
-    return m_crad;
+    m_circles[ind].set(x,y,rad,on);
 }
+void TrackerStimulator::deleteCircle(int ind)
+{
+    m_circles.erase(m_circles.begin() + ind);
+}
+void TrackerStimulator::disableCircles()
+{
+    for(int i=0; i<m_circles.size(); i++)
+        m_circles[i].off();
+}
+
+int TrackerStimulator::getSelectedCircle() const
+{
+    return m_selectedCircle;
+}
+void TrackerStimulator::setSelectedCircle(int ind)
+{
+    m_selectedCircle = ind;
+}
+
 int TrackerStimulator::getChan() const
 {
     return m_chan;
 }
 
-void TrackerStimulator::setCx(float cx)
-{
-    m_cx = cx;
-}
-void TrackerStimulator::setCy(float cy)
-{
-    m_cy = cy;
-}
-void TrackerStimulator::setCradius(float crad)
-{
-    m_crad = crad;
-}
 
 float TrackerStimulator::getStimFreq(int chan) const
 {
@@ -155,6 +166,10 @@ int TrackerStimulator::getRepetitions(int chan) const
 {
     return m_repetitions[chan];
 }
+int TrackerStimulator::getInterPulseInt(int chan) const
+{
+    return m_interPulseInt[chan];
+}
 
 void TrackerStimulator::setStimFreq(int chan, float stimFreq)
 {
@@ -184,22 +199,32 @@ void TrackerStimulator::setNegFirst(int chan, bool negFirst)
         m_negativeFirst[chan] = 1;
     else
         m_negativeFirst[chan] = 0;
+
 }
 void TrackerStimulator::setPhaseDuration(int chan, int phaseDuration)
 {
     m_phaseDuration[chan] = phaseDuration;
+    updatePulsePal();
 }
 void TrackerStimulator::setInterPhaseInt(int chan, int interPhaseInt)
 {
     m_interPhaseInt[chan] = interPhaseInt;
+    updatePulsePal();
 }
 void TrackerStimulator::setVoltage(int chan, float voltage)
 {
     m_voltage[chan] = voltage;
+    updatePulsePal();
 }
 void TrackerStimulator::setRepetitions(int chan, int rep)
 {
     m_repetitions[chan] = rep;
+    updatePulsePal();
+}
+void TrackerStimulator::setInterPulseInt(int chan, int interPulseInt)
+{
+    m_interPulseInt[chan] = interPulseInt;
+    updatePulsePal();
 }
 void TrackerStimulator::setChan(int chan)
 {
@@ -236,9 +261,7 @@ void TrackerStimulator::process(AudioSampleBuffer& buffer, MidiBuffer& events)
         }
 
         lock.exit();
-
     }
-
 
 }
 
@@ -260,10 +283,23 @@ void TrackerStimulator::handleEvent(int eventType, MidiMessage &event, int sampl
 
 }
 
+int TrackerStimulator::isPositionWithinCircles(float x, float y)
+{
+    int whichCircle = -1;
+    for (int i = 0; i < m_circles.size(); i++)
+    {
+        if (m_circles[i].isPositionIn(x,y))
+            whichCircle = i;
+    }
+    return whichCircle;
+}
+
 bool TrackerStimulator::stimulate()
 {
-    // make decision
-    return false;
+    if (isPositionWithinCircles(m_x, m_y) != -1)
+        return true;
+    else
+        return false;
 }
 
 bool TrackerStimulator::positionDisplayedIsUpdated() const
@@ -279,15 +315,40 @@ void TrackerStimulator::clearPositionDisplayedUpdated()
 
 bool TrackerStimulator::updatePulsePal()
 {
-    m_pulsePal.setBiphasic(m_chan, m_isBiphasic[m_chan]);
-    m_pulsePal.setPhase1Voltage(m_chan, m_voltage[m_chan]);
-    m_pulsePal.setPhase2Voltage(m_chan, m_voltage[m_chan]);
-    m_pulsePal.setPhase1Duration(m_chan, float(m_phaseDuration[m_chan])/1000.0);
-    m_pulsePal.setPhase2Duration(m_chan, float(m_phaseDuration[m_chan])/1000.0);
-    m_pulsePal.setInterPhaseInterval(m_chan, float(m_interPhaseInt[m_chan])/1000.0);
+    // check that Pulspal is connected and update param
+    if (m_pulsePalVersion != 0)
+    {
+        m_pulsePal.setBiphasic(m_chan, m_isBiphasic[m_chan]);
+        if (m_negativeFirst[m_chan])
+        {
+            m_pulsePal.setPhase1Voltage(m_chan, - m_voltage[m_chan]);
+            m_pulsePal.setPhase2Voltage(m_chan, m_voltage[m_chan]);
+        }
+        else
+        {
+            m_pulsePal.setPhase1Voltage(m_chan, m_voltage[m_chan]);
+            m_pulsePal.setPhase2Voltage(m_chan, - m_voltage[m_chan]);
+        }
 
+        m_pulsePal.setPhase1Duration(m_chan, float(m_phaseDuration[m_chan])/10e6);
+        m_pulsePal.setPhase2Duration(m_chan, float(m_phaseDuration[m_chan])/10e6);
+        m_pulsePal.setInterPhaseInterval(m_chan, float(m_interPhaseInt[m_chan])/10e6);
+
+        m_pulsePal.setPulseTrainDuration(m_chan, float(m_interPulseInt[m_chan])/10e6 * m_repetitions[m_chan]);
+    }
+    else
+        CoreServices::sendStatusMessage("PulsePal is not connected!");
 }
-bool TrackerStimulator::testStimulation(){} //test from Editor
+
+bool TrackerStimulator::testStimulation(){
+
+    // check that Pulspal is connected and update param
+    if (m_pulsePalVersion != 0)
+        m_pulsePal.triggerChannel(m_chan);
+    else
+        CoreServices::sendStatusMessage("PulsePal is not connected!");
+
+} //test from Editor
 
 
 void TrackerStimulator::startStimulation()
@@ -305,3 +366,78 @@ bool TrackerStimulator::isReady()
 {
     return true;
 }
+
+
+// Circle methods
+
+Circle::Circle()
+    : m_cx(0),
+      m_cy(0),
+      m_rad(0)
+{}
+
+Circle::Circle(float x, float y, float rad, bool on)
+{
+    m_cx = x;
+    m_cy = y;
+    m_rad = rad;
+    m_on = on;
+}
+
+float Circle::getX()
+{
+    return m_cx;
+}
+float Circle::getY()
+{
+    return m_cy;
+}
+float Circle::getRad()
+{
+    return m_rad;
+}
+bool Circle::getOn()
+{
+    return m_on;
+}
+void Circle::setX(float x)
+{
+    m_cx = x;
+}
+void Circle::setY(float y)
+{
+    m_cy = y;
+}
+void Circle::setRad(float rad)
+{
+    m_rad = rad;
+}
+void Circle::set(float x, float y, float rad, bool on)
+{
+    m_cx = x;
+    m_cy = y;
+    m_rad = rad;
+    m_on = on;
+}
+
+bool Circle::on()
+{
+    m_on = true;
+    return m_on;
+}
+bool Circle::off()
+{
+    m_on = false;
+    return m_on;
+}
+
+bool Circle::isPositionIn(float x, float y)
+{
+    if (pow(x - m_cx,2) + pow(y - m_cy,2)
+            <= m_rad*m_rad)
+        return true;
+    else
+        return false;
+}
+
+

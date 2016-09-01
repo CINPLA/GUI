@@ -51,11 +51,21 @@ private:
     float m_current_cy;
     float m_current_crad;
 
-    bool m_circleToDraw;
-    bool m_newCircle;
+    bool m_onoff;
+
+//    bool m_circleToDraw;
+//    bool m_newCircle;
+//    bool m_editCircle;
+//    bool m_delCircle;
+    bool m_updateCircle;
 
     ScopedPointer<UtilityButton> clearButton;
-    ScopedPointer<UtilityButton> drawButton;
+    ScopedPointer<UtilityButton> newButton;
+    ScopedPointer<UtilityButton> editButton;
+    ScopedPointer<UtilityButton> delButton;
+    ScopedPointer<UtilityButton> onButton;
+    ScopedPointer<UtilityButton> newcircButton;
+    ScopedPointer<UtilityButton> circlesButton[MAX_CIRCLES];
     ScopedPointer<UtilityButton> uniformButton;
     ScopedPointer<UtilityButton> gaussianButton;
     ScopedPointer<UtilityButton> negFirstButton;
@@ -70,6 +80,7 @@ private:
     ScopedPointer<Label> cxLabel;
     ScopedPointer<Label> cyLabel;
     ScopedPointer<Label> cradLabel;
+    ScopedPointer<Label> onLabel;
     ScopedPointer<Label> fmaxLabel;
     ScopedPointer<Label> elecLabel;
     ScopedPointer<Label> pulsePalLabel;
@@ -77,6 +88,7 @@ private:
     ScopedPointer<Label> phaseLabel;
     ScopedPointer<Label> interphaseLabel;
     ScopedPointer<Label> voltageLabel;
+    ScopedPointer<Label> interpulseLabel;
     ScopedPointer<Label> repetitionsLabel;
 
 
@@ -89,6 +101,7 @@ private:
     ScopedPointer<Label> phaseEditLabel;
     ScopedPointer<Label> interphaseEditLabel;
     ScopedPointer<Label> voltageEditLabel;
+    ScopedPointer<Label> interpulseEditLabel;
     ScopedPointer<Label> repetitionsEditLabel;
 
     //std::vector<Position> m_positions;

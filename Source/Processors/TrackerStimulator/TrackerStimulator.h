@@ -8,11 +8,43 @@
 #include <vector>
 
 #define DEF_PHASE_DURATION 100
-#define DEF_INTER_PHASE 50
+#define DEF_INTER_PHASE 100
+#define DEF_INTER_PULSE 200
 #define DEF_REPETITIONS 1
 #define DEF_VOLTAGE 5
 #define DEF_FREQ 2
 
+#define MAX_CIRCLES 9
+
+class Circle
+{
+public:
+    Circle();
+    Circle(float x, float y, float r, bool on);
+
+    float getX();
+    float getY();
+    float getRad();
+    bool getOn();
+
+    void setX(float x);
+    void setY(float y);
+    void setRad(float rad);
+    void set(float x, float y, float rad, bool on);
+
+    bool on();
+    bool off();
+
+    bool isPositionIn(float x, float y);
+
+private:
+
+    float m_cx;
+    float m_cy;
+    float m_rad;
+    bool m_on;
+
+};
 
 class TrackerStimulator : public GenericProcessor
 {
@@ -38,15 +70,23 @@ public:
     float getWidth() const;
     float getHeight() const;
 
-    float getCx() const;
-    float getCy() const;
-    float getCradius() const;
+//    float getCx() const;
+//    float getCy() const;
+//    float getCradius() const;
+//    void setCx(float cx);
+//    void setCy(float cy);
+//    void setCradius(float radius);
+
+    vector<Circle> getCircles();
+    void addCircle(Circle c);
+    void editCircle(int ind, float x, float y, float rad, bool on);
+    void deleteCircle(int ind);
+    void disableCircles();
+    // Circle setter can be done using Cicle class public methods
+    int getSelectedCircle() const;
+    void setSelectedCircle(int ind);
 
     int getChan() const;
-
-    void setCx(float cx);
-    void setCy(float cy);
-    void setCradius(float radius);
 
     float getStimFreq(int chan) const;
     int getStimElectrode(int chan) const;
@@ -58,6 +98,7 @@ public:
     int getInterPhaseInt(int chan) const;
     float getVoltage(int chan) const;
     int getRepetitions(int chan) const;
+    int getInterPulseInt(int chan) const;
 
     void setStimFreq(int chan, float stimFreq);
     void setStimElectrode(int chan, int stimElectrode);
@@ -69,10 +110,13 @@ public:
     void setInterPhaseInt(int chan, int interPhaseInt);
     void setVoltage(int chan, float voltage);
     void setRepetitions(int chan, int rep);
+    void setInterPulseInt(int chan, int interPulseInt);
     void setChan(int chan);
 
     void clearPositionDisplayedUpdated();
     bool positionDisplayedIsUpdated() const;
+
+    int isPositionWithinCircles(float x, float y);
 
     bool isSink(); //get the color correct
     bool isReady();
@@ -100,9 +144,12 @@ private:
     bool m_positionDisplayedIsUpdated;
 
     // Target Circle params (extend to vectors)
-    float m_cx;
-    float m_cy;
-    float m_crad;
+//    vector<float> m_cx;
+//    vector<float> m_cy;
+//    vector<float> m_crad;
+
+    vector<Circle> m_circles;
+    int m_selectedCircle;
 
     // Stimulation params
     vector<float> m_stimFreq;
@@ -116,11 +163,15 @@ private:
     vector<int> m_interPhaseInt; // us
     vector<int> m_repetitions;
     vector<float> m_voltage; // V
+    vector<int> m_interPulseInt; // us
+
+    // Selected stimulation chan
     int m_chan;
     int m_tot_chan;
 
     // PULSE PAL
     PulsePal m_pulsePal;
+    uint32_t m_pulsePalVersion;
 
     // Stimulate decision
     bool stimulate();
@@ -136,4 +187,7 @@ inline bool TrackerStimulator::isSink()
     return true;
 }
 
+
 #endif // TRACKERSTIMULATOR_H
+
+
