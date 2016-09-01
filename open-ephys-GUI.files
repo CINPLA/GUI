@@ -2201,3 +2201,9 @@ Source/MainWindow.h
 astyle.options
 open-ephys.jucer
 README.rst
+Source/Processors/TrackerStimulator/TrackerStimulator.h
+Source/Processors/TrackerStimulator/TrackerStimulator.cpp
+Source/Processors/TrackerStimulator/TrackerStimulatorEditor.h
+Source/Processors/TrackerStimulator/TrackerStimulatorEditor.cpp
+Source/Processors/TrackerStimulator/TrackerStimulatorCanvas.h
+Source/Processors/TrackerStimulator/TrackerStimulatorCanvas.cpp

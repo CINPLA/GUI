@@ -182,3 +182,4 @@ Source/Processors/Splitter
 Source/Processors/Visualization
 Source/Processors/WiFiOutput
 Source/UI
+Source/Processors/TrackerStimulator
