@@ -57,6 +57,7 @@
 #include "../OscNode/OscNode.h"
 #include "../PositionTracker/PositionTracker.h"
 #include "../SpikePositionNode/SpikePositionNode.h"
+#include "../TrackerStimulator/TrackerStimulator.h"
 
     
 ProcessorGraph::ProcessorGraph() : currentNodeId(100)
@@ -689,6 +690,11 @@ GenericProcessor* ProcessorGraph::createProcessorFromDescription(String& descrip
         {
                 std::cout << "Creating a Spike Position output node." << std::endl;
                 processor = new SpikePositionNode();
+        }
+        else if (subProcessorType.equalsIgnoreCase("Tracker Stimulator"))
+        {
+                std::cout << "Creating a Tracker Stimulator output node." << std::endl;
+                processor = new TrackerStimulator();
         }
 
         CoreServices::sendStatusMessage("New sink created.");
