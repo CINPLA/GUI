@@ -6,6 +6,8 @@
 #include "../Visualization/Visualizer.h"
 #include "../Editors/GenericEditor.h"
 
+class DisplayAxes;
+
 class TrackerStimulatorCanvas : public Visualizer,
         public Button::Listener,
         public Label::Listener,
@@ -40,25 +42,10 @@ public:
     virtual void setParameter(int, float);
     virtual void setParameter(int, int, int, float);
 
-private:
-    TrackerStimulator* processor;
-    float m_x;
-    float m_y;
-    float m_width;
-    float m_height;
+    bool getUpdateCircle();
+    void setOnButton();
 
-    float m_current_cx;
-    float m_current_cy;
-    float m_current_crad;
-
-    bool m_onoff;
-
-//    bool m_circleToDraw;
-//    bool m_newCircle;
-//    bool m_editCircle;
-//    bool m_delCircle;
-    bool m_updateCircle;
-
+    // *** Maybe adjust with proper accessors instead of keep public *** //
     ScopedPointer<UtilityButton> clearButton;
     ScopedPointer<UtilityButton> newButton;
     ScopedPointer<UtilityButton> editButton;
@@ -104,11 +91,84 @@ private:
     ScopedPointer<Label> interpulseEditLabel;
     ScopedPointer<Label> repetitionsEditLabel;
 
-    //std::vector<Position> m_positions;
+
+private:
+    TrackerStimulator* processor;
+    float m_x;
+    float m_y;
+    float m_width;
+    float m_height;
+
+    float m_current_cx;
+    float m_current_cy;
+    float m_current_crad;
+
+    bool m_onoff;
+    bool m_updateCircle;
+
+    ScopedPointer<DisplayAxes> m_ax;
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TrackerStimulatorCanvas)
 };
 
+///**
+
+//  Class for displaying and draw circles and current position
+
+//*/
+
+class DisplayAxes : public Component
+{
+public:
+    DisplayAxes(TrackerStimulator* trackerStimulator, TrackerStimulatorCanvas* trackerStimulatorCanvas);
+    ~DisplayAxes();
+
+    void setXLims(double xmin, double xmax);
+    void setYLims(double ymin, double ymax);
+
+    void paint(Graphics& g);
+
+    void clear();
+
+    void mouseMove(const MouseEvent& event);
+    void mouseEnter(const MouseEvent& event);
+    void mouseExit(const MouseEvent& event);
+    void mouseDown(const MouseEvent& event);
+    void mouseUp(const MouseEvent& event);
+    void mouseDrag(const MouseEvent& event);
+
+
+private:
+
+    double xlims[2];
+    double ylims[2];
+
+    TrackerStimulator* processor;
+    TrackerStimulatorCanvas* canvas;
+
+    Colour selectedCircleColour;
+    Colour unselectedCircleColour;
+    Colour backgroundColour;
+    Colour outOfCirclesColour;
+    Colour inOfCirclesColour;
+
+    int64 click_time;
+
+    bool m_firstPaint;
+
+    bool m_creatingNewCircle;
+    bool m_mayBeMoving;
+    bool m_movingCircle;
+    bool m_doubleClick;
+
+    float m_newX;
+    float m_newY;
+    float m_newRad;
+    float m_tempRad;
+
+    MouseCursor::StandardCursorType cursorType;
+
+};
 
 #endif // TRACKERSTIMULATORCANVAS_H

@@ -16,8 +16,8 @@
 TrackerStimulator::TrackerStimulator()
     : GenericProcessor("Tracker Stimulator")
     , m_isOn(false)
-    , m_x(0.0)
-    , m_y(0.0)
+    , m_x(0.)
+    , m_y(0.)
     , m_height(1.0)
     , m_width(1.0)
     , m_positionIsUpdated(false)
@@ -44,7 +44,7 @@ TrackerStimulator::TrackerStimulator()
     m_interPhaseInt = vector<int>(m_tot_chan, DEF_INTER_PHASE);
     m_repetitions = vector<int>(m_tot_chan, DEF_REPETITIONS);
     m_voltage = vector<float>(m_tot_chan, DEF_VOLTAGE);
-    m_voltage = vector<int>(m_tot_chan, DEF_INTER_PULSE);
+    m_interPulseInt = vector<int>(m_tot_chan, DEF_INTER_PULSE);
 
     m_isUniform = vector<int>(m_tot_chan, 1);
     m_isBiphasic = vector<int>(m_tot_chan, 1);

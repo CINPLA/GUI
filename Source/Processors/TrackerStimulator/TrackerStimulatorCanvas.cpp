@@ -14,8 +14,8 @@
 #include "TrackerStimulator.h"
 
 
-TrackerStimulatorCanvas::TrackerStimulatorCanvas(TrackerStimulator *TrackerStimulator)
-    : processor(TrackerStimulator)
+TrackerStimulatorCanvas::TrackerStimulatorCanvas(TrackerStimulator* trackerStimulator)
+    : processor(trackerStimulator)
     , m_x(0.5)
     , m_y(0.5)
     , m_width(1.0)
@@ -28,6 +28,8 @@ TrackerStimulatorCanvas::TrackerStimulatorCanvas(TrackerStimulator *TrackerStimu
     // Setup Labels
     initLabels();
 
+    m_ax = new DisplayAxes(trackerStimulator, this);
+
     startCallbacks();
     update();
 }
@@ -39,24 +41,22 @@ TrackerStimulatorCanvas::~TrackerStimulatorCanvas()
 
 void TrackerStimulatorCanvas::paint (Graphics& g)
 {
-    if(m_x != m_x || m_y != m_y || m_width != m_width || m_height != m_height) { // is it nan?
+    if(m_x != m_x || m_y != m_y || m_width != m_width || m_height != m_height)
+    { // is it nan?
         return;
     }
+
     // set aspect ratio to cam size
-    float aC = m_width / m_height;
-    float aS = getWidth() / getHeight();
-    int camHeight = (aS > aC) ? getHeight() : getHeight() * (aS / aC);
-    int camWidth = (aS < aC) ? getWidth() : getWidth() * (aC / aS);
+//    float aC = m_width / m_height;
+//    float aS = getWidth() / getHeight();
+//    int camHeight = (aS > aC) ? getHeight() : getHeight() * (aS / aC);
+//    int camWidth = (aS < aC) ? getWidth() : getWidth() * (aC / aS);
 
     g.setColour(Colours::black); // backbackround color
     g.fillRect(0, 0, getWidth(), getHeight());
 
     //    g.setColour(Colour(0,18,43)); //background color
     //    g.fillRect((getWidth()-camWidth)/2, (getHeight()-camHeight)/2, camWidth, camHeight);
-
-    g.setColour(Colour(0,18,43)); //background color
-    // Use Height as scaling -> always square
-    g.fillRect(int(0.01*getHeight()), int(0.01*getHeight()), int(0.98*getHeight()), int(0.98*getHeight()));
 
     // on-off LED
     if (m_onoff)
@@ -66,78 +66,14 @@ void TrackerStimulatorCanvas::paint (Graphics& g)
     g.fillEllipse(getWidth() - 0.065*getWidth(), 0.25*getHeight(), 0.03*getWidth(), 0.03*getHeight());
 
 
-
-    if (m_updateCircle)
-    {
-
-        for (int i = 0; i < processor->getCircles().size(); i++)
-        {
-            // Check from labels!!!
-            //            if ((cur_rad > 0 && cur_rad <= 1) && (m_current_cx >= 0 && m_current_cx <= 1)
-            //                    &&  (cur_y >= 0 && cur_y <= 1))
-
-            // draw circle if it is ON
-            if (processor->getCircles()[i].getOn())
-            {
-                float cur_x, cur_y, cur_rad;
-                int x, y, radx, rady;
-
-                cur_x = processor->getCircles()[i].getX();
-                cur_y = processor->getCircles()[i].getY();
-                cur_rad = processor->getCircles()[i].getRad();
-
-                x = int(cur_x * 0.98*getHeight() + 0.01*getHeight());
-                y = int(cur_y * 0.98*getHeight() + 0.01*getHeight());
-                radx = int(cur_rad * 0.98*getHeight());
-                rady = int(cur_rad * 0.98*getHeight());
-                // center ellipse
-                x -= radx;
-                y -= rady;
-
-                g.saveState();
-                g.reduceClipRegion(int(0.01*getHeight()), int(0.01*getHeight()), int(0.98*getHeight()), int(0.98*getHeight()));
-                if (i==processor->getSelectedCircle())
-                    g.setColour(Colour(255,155,30));
-                else
-                    g.setColour(Colour(200,255,30));
-                g.fillEllipse(x, y, 2*radx, 2*rady);
-                g.restoreState();
-            }
-        }
-
-    }
-
-
-    // Draw a point for the current position
-    // If inside circle display in RED
-
-    if ((m_x > 0 && m_x <= 1) && (m_y >= 0 && m_y <= 1))
-    {
-        int x, y;
-
-        x = int(m_x * 0.98*getHeight() + 0.01*getHeight());
-        y = int(m_y * 0.98*getHeight() + 0.01*getHeight());
-
-        int circleIn = processor->isPositionWithinCircles(m_x, m_y);
-
-        if (circleIn != -1 && processor->getCircles()[circleIn].getOn())
-            g.setColour(Colour(255,30,30));
-        else
-            g.setColour(Colour(30, 200, 180));
-
-        g.saveState();
-        g.reduceClipRegion(int(0.01*getHeight()), int(0.01*getHeight()), int(0.98*getHeight()), int(0.98*getHeight()));
-        g.fillEllipse(x, y, 0.01*getHeight(), 0.01*getHeight());
-        g.restoreState();
-
-    }
-
-
-
+    //m_ax->paint(Graphics g);
 }
 
 void TrackerStimulatorCanvas::resized()
 {
+    m_ax->setBounds(int(0.01*getHeight()), int(0.01*getHeight()), int(0.98*getHeight()), int(0.98*getHeight()));
+    addAndMakeVisible(m_ax);
+
     // Express all positions as proportion of height and width
     // Buttons
     clearButton->setBounds(getWidth() - 0.35*getWidth(), getHeight()-0.1*getHeight(), 0.1*getWidth(),0.05*getHeight());
@@ -231,7 +167,7 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
         if (circlesButton[processor->getSelectedCircle()]->getToggleState()==false)
                 circlesButton[processor->getSelectedCircle()]->triggerClick();
 
-        repaint();
+
     }
     else if (button == editButton)
     {
@@ -241,7 +177,6 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
         Value y = cyEditLabel->getTextValue();
         Value rad = cradEditLabel->getTextValue();
         processor->editCircle(processor->getSelectedCircle(),x.getValue(),y.getValue(),rad.getValue(),m_onoff);
-        repaint();
     }
     else if (button == delButton)
     {
@@ -268,7 +203,6 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
         for (int i = 0; i<MAX_CIRCLES; i++)
                 circlesButton[i]->setToggleState(false, true);
 
-        repaint();
     }
     else if (button == onButton)
     {
@@ -276,8 +210,6 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
         // make changes immediately if circle already exist
         if (processor->getSelectedCircle() != -1)
             editButton->triggerClick();
-
-        repaint();
     }
     else if (button == uniformButton)
     {
@@ -290,7 +222,6 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
         else
             if (gaussianButton->getToggleState()==false)
                 gaussianButton->triggerClick();
-        repaint();
     }
     else if (button == gaussianButton)
     {
@@ -303,7 +234,6 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
         else
             if (uniformButton->getToggleState()==false)
                 uniformButton->triggerClick();
-        repaint();
 
     }
     else if (button == biphasicButton)
@@ -312,7 +242,6 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
             processor->setIsBiphasic(processor->getChan(), true);
         else
             processor->setIsBiphasic(processor->getChan(), false);
-        repaint();
     }
     else if (button == negFirstButton)
     {
@@ -325,7 +254,6 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
         else
             if (posFirstButton->getToggleState()==false)
                 posFirstButton->triggerClick();
-        repaint();
     }
     else if (button == posFirstButton)
     {
@@ -338,7 +266,6 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
         else
             if (negFirstButton->getToggleState()==false)
                 negFirstButton->triggerClick();
-        repaint();
     }
     else if (button == chan1Button)
     {
@@ -391,7 +318,6 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
             if (chan1Button->getToggleState()==false && chan2Button->getToggleState() == false
                     && chan3Button->getToggleState()==false && chan4Button->getToggleState() == false)
                 chan1Button->triggerClick();
-        repaint();
     }
     else if (button == chan2Button)
     {
@@ -444,7 +370,7 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
             if (chan1Button->getToggleState()==false && chan2Button->getToggleState() == false
                     && chan3Button->getToggleState()==false && chan4Button->getToggleState() == false)
                 chan2Button->triggerClick();
-        repaint();
+
     }
     else if (button == chan3Button)
     {
@@ -495,7 +421,7 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
             if (chan1Button->getToggleState()==false && chan2Button->getToggleState() == false
                     && chan3Button->getToggleState()==false && chan4Button->getToggleState() == false)
                 chan3Button->triggerClick();
-        repaint();
+
     }
     else if (button == chan4Button)
     {
@@ -546,7 +472,7 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
             if (chan1Button->getToggleState()==false && chan2Button->getToggleState() == false
                     && chan3Button->getToggleState()==false && chan4Button->getToggleState() == false)
                 chan4Button->triggerClick();
-        repaint();
+
     }
     else
     {
@@ -590,8 +516,9 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
             m_onoff = false;
 
         }
-        repaint();
+
     }
+     repaint();
 
 }
 
@@ -1015,6 +942,15 @@ void TrackerStimulatorCanvas::clear()
     repaint();
 }
 
+bool TrackerStimulatorCanvas::getUpdateCircle(){
+    return m_updateCircle;
+}
+
+void TrackerStimulatorCanvas::setOnButton()
+{
+    m_onoff = true;
+}
+
 
 void TrackerStimulatorCanvas::setParameter(int, float)
 {
@@ -1023,3 +959,307 @@ void TrackerStimulatorCanvas::setParameter(int, float)
 void TrackerStimulatorCanvas::setParameter(int, int, int, float)
 {
 }
+
+
+// DisplayAxes methods
+
+DisplayAxes::DisplayAxes(TrackerStimulator* trackerStimulator, TrackerStimulatorCanvas* trackerStimulatorCanvas)
+    : processor(trackerStimulator)
+    , canvas(trackerStimulatorCanvas)
+    , selectedCircleColour(Colour(255,155,30))
+    , unselectedCircleColour(Colour(200,255,30))
+    , backgroundColour(Colour(0,18,43))
+    , outOfCirclesColour(Colour(30, 200, 180))
+    , inOfCirclesColour(Colour(255,30,30))
+    , m_creatingNewCircle(false)
+    , m_movingCircle(false)
+    , m_mayBeMoving(false)
+    , m_firstPaint(true)
+
+{
+    // *** Add: 1) delete circle with delete button
+    //          2) double fast click -> change size
+
+    xlims[0] = getBounds().getRight() - getWidth();
+    xlims[1] = getBounds().getRight();
+    ylims[0] = getBounds().getBottom() - getHeight();
+    ylims[1] = getBounds().getBottom();
+
+}
+
+DisplayAxes::~DisplayAxes(){}
+
+void DisplayAxes::paint(Graphics& g){
+
+    xlims[0] = getBounds().getRight() - getWidth();
+    xlims[1] = getBounds().getRight();
+    ylims[0] = getBounds().getBottom() - getHeight();
+    ylims[1] = getBounds().getBottom();
+
+    g.setColour(backgroundColour); //background color
+    g.fillAll();
+
+    if (canvas->getUpdateCircle())
+    {
+
+        for (int i = 0; i < processor->getCircles().size(); i++)
+        {
+
+            // draw circle if it is ON
+            if (processor->getCircles()[i].getOn())
+            {
+                float cur_x, cur_y, cur_rad;
+                int x, y, radx, rady;
+
+                cur_x = processor->getCircles()[i].getX();
+                cur_y = processor->getCircles()[i].getY();
+                cur_rad = processor->getCircles()[i].getRad();
+
+
+                x = int(cur_x * getWidth() + xlims[0]);
+                y = int(cur_y * getHeight() + ylims[0]);
+
+                radx = int(cur_rad * getWidth());
+                rady = int(cur_rad * getHeight());
+                // center ellipse
+                x -= radx;
+                y -= rady;
+
+//                g.saveState();
+//                g.reduceClipRegion(getBounds());
+                if (i==processor->getSelectedCircle())
+                {
+                    // if circle is being moved, draw moving circle
+                    if (!m_movingCircle)
+                    {
+                        g.setColour(selectedCircleColour);
+                        g.fillEllipse(x, y, 2*radx, 2*rady);
+                    }
+                }
+                else
+                {
+                    g.setColour(unselectedCircleColour);
+                    g.fillEllipse(x, y, 2*radx, 2*rady);
+                }
+
+//                g.restoreState();
+            }
+        }
+
+    }
+
+    float pos_x = processor->getX();
+    float pos_y = processor->getY();
+
+    // Draw a point for the current position
+    // If inside circle display in RED
+
+    if ((pos_x >= 0 && pos_x <= 1) && (pos_y >= 0 && pos_y <= 1))
+    {
+        int x, y;
+
+        x = int(pos_x * getWidth() + xlims[0]);
+        y = int(pos_y * getHeight() + ylims[0]);
+
+        int circleIn = processor->isPositionWithinCircles(pos_x, pos_y);
+
+        if (circleIn != -1 && processor->getCircles()[circleIn].getOn())
+            g.setColour(inOfCirclesColour);
+        else
+            g.setColour(outOfCirclesColour);
+
+        //g.saveState();
+        //g.reduceClipRegion(getBounds());
+        g.fillEllipse(x, y, 0.01*getHeight(), 0.01*getHeight());
+        //g.restoreState();
+
+    }
+
+    if (m_creatingNewCircle)
+    {
+        // draw circle increasing in size
+        int x, y, radx, rady;
+
+        x = int(m_newX * getWidth() + xlims[0]);
+        y = int(m_newY * getHeight() + ylims[0]);
+        radx = int(m_tempRad * getWidth());
+        rady = int(m_tempRad * getHeight());
+        // center ellipse
+        x -= radx;
+        y -= rady;
+
+        g.setColour(unselectedCircleColour);
+        g.fillEllipse(x, y, 2*radx, 2*rady);
+
+    }
+
+    if (m_movingCircle)
+    {
+        // draw moving circle
+        int x, y, radx, rady;
+
+        x = int(m_newX * getWidth() + xlims[0]);
+        y = int(m_newY * getHeight() + ylims[0]);
+        m_tempRad = processor->getCircles()[processor->getSelectedCircle()].getRad();
+        radx = int(m_tempRad * getWidth());
+        rady = int(m_tempRad * getHeight());
+        // center ellipse
+        x -= radx;
+        y -= rady;
+
+        g.setColour(selectedCircleColour);
+        g.fillEllipse(x, y, 2*radx, 2*rady);
+    }
+
+//    if (m_doubleClick)
+//    {
+//        // draw moving circle
+//        int x, y, radx, rady;
+
+//        x = int(m_newX * getWidth() + xlims[0]);
+//        y = int(m_newY * getHeight() + ylims[0]);
+//        m_tempRad = processor->getCircles()[processor->getSelectedCircle()].getRad();
+//        radx = int(m_tempRad * getWidth());
+//        rady = int(m_tempRad * getHeight());
+//        // center ellipse
+//        x -= radx;
+//        y -= rady;
+
+//        g.setColour(selectedCircleColour);
+//        g.fillEllipse(x, y, 2*radx, 2*rady);
+//    }
+
+}
+
+void DisplayAxes::clear(){}
+
+void DisplayAxes::mouseMove(const MouseEvent& event){
+    if (m_creatingNewCircle)
+    {
+        // compute m_tempRad
+        m_tempRad = sqrt((pow(float(event.x)/float(getWidth())-m_newX, 2) +
+                        pow(float(event.y)/float(getHeight())-m_newY, 2)));
+        repaint();
+    }
+//    if (m_doubleClick)
+//    {
+//        // compute m_tempRad
+//        m_tempRad = sqrt((pow(float(event.x)/float(getWidth())-m_newX, 2) +
+//                        pow(float(event.y)/float(getHeight())-m_newY, 2)));
+//        m_newX = processor->getCircles()[processor->getSelectedCircle()].getX();
+//        m_newY = processor->getCircles()[processor->getSelectedCircle()].getY();
+//        repaint();
+//    }
+}
+
+void DisplayAxes::mouseEnter(const MouseEvent& event){
+    setMouseCursor(MouseCursor::CrosshairCursor);
+}
+
+void DisplayAxes::mouseExit(const MouseEvent& event){
+    m_movingCircle = false;
+    m_creatingNewCircle = false;
+    m_mayBeMoving = false;
+}
+
+void DisplayAxes::mouseDown(const MouseEvent& event)
+{
+    if (!event.mods.isRightButtonDown())
+    {
+        // check previous click time
+        int64 current = Time::currentTimeMillis();
+
+        int circleIn = processor->isPositionWithinCircles(float(event.x)/float(getWidth()),
+                                                          float(event.y)/float(getHeight()));
+        // If on a circle -> select circle!
+        if (circleIn != -1)
+        {
+            if (canvas->circlesButton[circleIn]->getToggleState() != true)
+                canvas->circlesButton[circleIn]->triggerClick();
+            m_creatingNewCircle = false;
+            m_newX = float(event.x)/float(getWidth());
+            m_newY = float(event.y)/float(getHeight());
+            m_mayBeMoving = true;
+
+//            if (current-click_time <= 300)
+//                m_doubleClick = true;
+//            else
+//            {
+//                m_mayBeMoving = true;
+//                m_doubleClick = false;
+//                click_time = Time::currentTimeMillis();
+//            }
+        }
+        else if (m_creatingNewCircle)
+        {
+            m_creatingNewCircle = false;
+            m_newRad = sqrt((pow(float(event.x)/float(getWidth())-m_newX, 2) +
+                            pow(float(event.y)/float(getHeight())-m_newY, 2)));
+            canvas->cradEditLabel->setText(String(m_newRad), dontSendNotification);
+            setMouseCursor(MouseCursor::CrosshairCursor);
+
+            // Add new circle
+            canvas->setOnButton();
+            canvas->newButton->triggerClick();
+
+        }
+        else  // Else -> create new circle (set center and drag radius)
+        {
+            m_creatingNewCircle = true;
+            m_newX = float(event.x)/float(getWidth());
+            m_newY = float(event.y)/float(getHeight());
+            setMouseCursor(MouseCursor::DraggingHandCursor);
+            canvas->cxEditLabel->setText(String(m_newX), dontSendNotification);
+            canvas->cyEditLabel->setText(String(m_newY), dontSendNotification);
+        }
+    }
+}
+
+void DisplayAxes::mouseUp(const MouseEvent& event){
+    if (m_movingCircle)
+    {
+        // Change to new center and edit circle
+        m_newX = float(event.x)/float(getWidth());
+        m_newY = float(event.y)/float(getHeight());
+        canvas->cxEditLabel->setText(String(m_newX),dontSendNotification);
+        canvas->cyEditLabel->setText(String(m_newY),dontSendNotification);
+
+        canvas->editButton->triggerClick();
+        m_movingCircle = false;
+    }
+}
+
+void DisplayAxes::mouseDrag(const MouseEvent& event){
+    if (m_mayBeMoving)
+    {
+        // if dragging is grater than 0.05 -> start moving circle
+        // compute m_tempRad
+        float cx, cy;
+        cx = processor->getCircles()[processor->getSelectedCircle()].getX();
+        cy = processor->getCircles()[processor->getSelectedCircle()].getY();
+        m_tempRad = sqrt((pow(float(event.x)/float(getWidth())-cx, 2) +
+                        pow(float(event.y)/float(getHeight())-cy, 2)));
+
+        if (m_tempRad > 0.02)
+        {
+            m_movingCircle = true;
+            m_mayBeMoving = false;
+        }
+    }
+    if (m_movingCircle)
+    {
+        m_newX = float(event.x)/float(getWidth());
+        m_newY = float(event.y)/float(getHeight());
+
+        // Check boundaries
+        if (!(m_newX <= 1 && m_newX >= 0) || !(m_newY <= 1 && m_newY >= 0))
+            m_movingCircle = false;
+        repaint();
+    }
+}
+
+
+
+
+
+
