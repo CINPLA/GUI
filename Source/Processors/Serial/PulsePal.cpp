@@ -94,15 +94,25 @@ void PulsePal::initialize()
 
     vector<ofSerialDeviceInfo> devices = serial.getDeviceList();
 
-   // bool foundDevice = false;
+    // MODIFIED: search for Pulse Pal among all serial devices
+    bool foundDevice = false;
 
-    int id = devices[0].getDeviceID();
-        string path = devices[0].getDevicePath();
-        string name = devices[0].getDeviceName();
+    for (int i=0; i<devices.size() && !foundDevice; i++)
+    {
+        int id = devices[i].getDeviceID();
+        string path = devices[i].getDevicePath();
+        string name = devices[i].getDeviceName();
 
-    serial.setup(id, 115200);
-    std::cout << "Found Pulse Pal with firmware version " << getFirmwareVersion() << std::endl;
+        serial.setup(id, 115200);
+        if (getFirmwareVersion() > 0)
+        {
+            std::cout << "Found Pulse Pal with firmware version " << getFirmwareVersion() << std::endl;
+            foundDevice = true;
+        }
+    }
+
 }
+
 
 uint32_t PulsePal::getFirmwareVersion() // JS 1/30/2014
 {

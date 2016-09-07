@@ -39,6 +39,11 @@ TrackerStimulatorCanvas::~TrackerStimulatorCanvas()
     TopLevelWindow::getTopLevelWindow(0)->removeKeyListener(this);
 }
 
+float TrackerStimulatorCanvas::my_round(float x)
+{
+    return x < 0.0 ? ceil(x - 0.5) : floor(x + 0.5);
+}
+
 void TrackerStimulatorCanvas::paint (Graphics& g)
 {
     if(m_x != m_x || m_y != m_y || m_width != m_width || m_height != m_height)
@@ -578,7 +583,7 @@ void TrackerStimulatorCanvas::labelTextChanged(Label *label)
     {
         // 100 - 3600*10e6 (3600 s)
         Value val = label->getTextValue();
-        int value = int(round(float(val.getValue())/100) * 100); //only multiple of 100us
+        int value = int(my_round(float(val.getValue())/100) * 100); //only multiple of 100us
         if ((int(val.getValue())>=0 && int(val.getValue())<=3600*10e6))
         {
             processor->setPhaseDuration(processor->getChan(), value);
@@ -594,7 +599,7 @@ void TrackerStimulatorCanvas::labelTextChanged(Label *label)
     if (label == interphaseEditLabel)
     {
         Value val = label->getTextValue();
-        int value = int(round(float(val.getValue())/100) * 100); //only multiple of 100us
+        int value = int(my_round(float(val.getValue())/100) * 100); //only multiple of 100us
         if ((int(val.getValue())>=0 && int(val.getValue())<=3600*10e6))
         {
             processor->setInterPhaseInt(processor->getChan(), value);
@@ -634,7 +639,7 @@ void TrackerStimulatorCanvas::labelTextChanged(Label *label)
     if (label == interpulseEditLabel)
     {
         Value val = label->getTextValue();
-        int value = int(round(float(val.getValue())/100) * 100); //only multiple of 100us
+        int value = int(my_round(float(val.getValue())/100) * 100); //only multiple of 100us
         if ((int(val.getValue())>=0 && int(val.getValue())<=3600*10e6))
         {
             processor->setInterPulseInt(processor->getChan(), value);
@@ -1030,7 +1035,7 @@ void DisplayAxes::paint(Graphics& g){
                 if (i==processor->getSelectedCircle())
                 {
                     // if circle is being moved, draw moving circle
-                    if (!m_movingCircle)
+                    if (!m_movingCircle || !m_doubleClick)
                     {
                         g.setColour(selectedCircleColour);
                         g.fillEllipse(x, y, 2*radx, 2*rady);
@@ -1111,23 +1116,22 @@ void DisplayAxes::paint(Graphics& g){
         g.fillEllipse(x, y, 2*radx, 2*rady);
     }
 
-//    if (m_doubleClick)
-//    {
-//        // draw moving circle
-//        int x, y, radx, rady;
+    if (m_doubleClick)
+    {
+        // draw moving circle
+        int x, y, radx, rady;
 
-//        x = int(m_newX * getWidth() + xlims[0]);
-//        y = int(m_newY * getHeight() + ylims[0]);
-//        m_tempRad = processor->getCircles()[processor->getSelectedCircle()].getRad();
-//        radx = int(m_tempRad * getWidth());
-//        rady = int(m_tempRad * getHeight());
-//        // center ellipse
-//        x -= radx;
-//        y -= rady;
+        x = int(m_newX * getWidth() + xlims[0]);
+        y = int(m_newY * getHeight() + ylims[0]);
+        radx = int(m_tempRad * getWidth());
+        rady = int(m_tempRad * getHeight());
+        // center ellipse
+        x -= radx;
+        y -= rady;
 
-//        g.setColour(selectedCircleColour);
-//        g.fillEllipse(x, y, 2*radx, 2*rady);
-//    }
+        g.setColour(selectedCircleColour);
+        g.fillEllipse(x, y, 2*radx, 2*rady);
+    }
 
 }
 
@@ -1141,15 +1145,15 @@ void DisplayAxes::mouseMove(const MouseEvent& event){
                         pow(float(event.y)/float(getHeight())-m_newY, 2)));
         repaint();
     }
-//    if (m_doubleClick)
-//    {
-//        // compute m_tempRad
-//        m_tempRad = sqrt((pow(float(event.x)/float(getWidth())-m_newX, 2) +
-//                        pow(float(event.y)/float(getHeight())-m_newY, 2)));
-//        m_newX = processor->getCircles()[processor->getSelectedCircle()].getX();
-//        m_newY = processor->getCircles()[processor->getSelectedCircle()].getY();
-//        repaint();
-//    }
+    if (m_doubleClick)
+    {
+        // compute m_tempRad
+        m_tempRad = sqrt((pow(float(event.x)/float(getWidth())-m_newX, 2) +
+                        pow(float(event.y)/float(getHeight())-m_newY, 2)));
+        m_newX = processor->getCircles()[processor->getSelectedCircle()].getX();
+        m_newY = processor->getCircles()[processor->getSelectedCircle()].getY();
+        repaint();
+    }
 }
 
 void DisplayAxes::mouseEnter(const MouseEvent& event){
@@ -1171,8 +1175,19 @@ void DisplayAxes::mouseDown(const MouseEvent& event)
 
         int circleIn = processor->isPositionWithinCircles(float(event.x)/float(getWidth()),
                                                           float(event.y)/float(getHeight()));
+        if (m_doubleClick)
+        {
+            m_newRad = sqrt((pow(float(event.x)/float(getWidth())-m_newX, 2) +
+                            pow(float(event.y)/float(getHeight())-m_newY, 2)));
+            canvas->cradEditLabel->setText(String(m_newRad), dontSendNotification);
+
+            // Add new circle
+            canvas->setOnButton();
+            canvas->editButton->triggerClick();
+            m_doubleClick = false;
+        }
         // If on a circle -> select circle!
-        if (circleIn != -1)
+        else if (circleIn != -1)
         {
             if (canvas->circlesButton[circleIn]->getToggleState() != true)
                 canvas->circlesButton[circleIn]->triggerClick();
@@ -1181,14 +1196,14 @@ void DisplayAxes::mouseDown(const MouseEvent& event)
             m_newY = float(event.y)/float(getHeight());
             m_mayBeMoving = true;
 
-//            if (current-click_time <= 300)
-//                m_doubleClick = true;
-//            else
-//            {
-//                m_mayBeMoving = true;
-//                m_doubleClick = false;
-//                click_time = Time::currentTimeMillis();
-//            }
+            if (current-click_time <= 300)
+                m_doubleClick = true;
+            else
+            {
+                m_mayBeMoving = true;
+                m_doubleClick = false;
+                click_time = Time::currentTimeMillis();
+            }
         }
         else if (m_creatingNewCircle)
         {

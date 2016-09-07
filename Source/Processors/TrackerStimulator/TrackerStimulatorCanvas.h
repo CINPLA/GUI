@@ -44,6 +44,7 @@ public:
 
     bool getUpdateCircle();
     void setOnButton();
+    float my_round(float x);
 
     // *** Maybe adjust with proper accessors instead of keep public *** //
     ScopedPointer<UtilityButton> clearButton;

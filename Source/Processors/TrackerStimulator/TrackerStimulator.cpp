@@ -318,23 +318,24 @@ bool TrackerStimulator::updatePulsePal()
     // check that Pulspal is connected and update param
     if (m_pulsePalVersion != 0)
     {
-        m_pulsePal.setBiphasic(m_chan, m_isBiphasic[m_chan]);
+        int actual_chan = m_chan+1;
+        m_pulsePal.setBiphasic(actual_chan, m_isBiphasic[m_chan]);
         if (m_negativeFirst[m_chan])
         {
-            m_pulsePal.setPhase1Voltage(m_chan, - m_voltage[m_chan]);
-            m_pulsePal.setPhase2Voltage(m_chan, m_voltage[m_chan]);
+            m_pulsePal.setPhase1Voltage(actual_chan, - m_voltage[m_chan]);
+            m_pulsePal.setPhase2Voltage(actual_chan, m_voltage[m_chan]);
         }
         else
         {
-            m_pulsePal.setPhase1Voltage(m_chan, m_voltage[m_chan]);
-            m_pulsePal.setPhase2Voltage(m_chan, - m_voltage[m_chan]);
+            m_pulsePal.setPhase1Voltage(actual_chan, m_voltage[m_chan]);
+            m_pulsePal.setPhase2Voltage(actual_chan, - m_voltage[m_chan]);
         }
 
-        m_pulsePal.setPhase1Duration(m_chan, float(m_phaseDuration[m_chan])/10e6);
-        m_pulsePal.setPhase2Duration(m_chan, float(m_phaseDuration[m_chan])/10e6);
-        m_pulsePal.setInterPhaseInterval(m_chan, float(m_interPhaseInt[m_chan])/10e6);
+        m_pulsePal.setPhase1Duration(actual_chan, float(m_phaseDuration[m_chan])/10e6);
+        m_pulsePal.setPhase2Duration(actual_chan, float(m_phaseDuration[m_chan])/10e6);
+        m_pulsePal.setInterPhaseInterval(actual_chan, float(m_interPhaseInt[m_chan])/10e6);
 
-        m_pulsePal.setPulseTrainDuration(m_chan, float(m_interPulseInt[m_chan])/10e6 * m_repetitions[m_chan]);
+        m_pulsePal.setPulseTrainDuration(actual_chan, float(m_interPulseInt[m_chan])/10e6 * m_repetitions[m_chan]);
     }
     else
         CoreServices::sendStatusMessage("PulsePal is not connected!");
@@ -344,7 +345,7 @@ bool TrackerStimulator::testStimulation(){
 
     // check that Pulspal is connected and update param
     if (m_pulsePalVersion != 0)
-        m_pulsePal.triggerChannel(m_chan);
+        m_pulsePal.triggerChannel(m_chan + 1);
     else
         CoreServices::sendStatusMessage("PulsePal is not connected!");
 
