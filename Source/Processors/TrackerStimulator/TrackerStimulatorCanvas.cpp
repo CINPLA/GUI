@@ -523,7 +523,8 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
         }
 
     }
-     repaint();
+	processor->updatePulsePal();
+    repaint();
 
 }
 
@@ -560,7 +561,7 @@ void TrackerStimulatorCanvas::labelTextChanged(Label *label)
     if (label == fmaxEditLabel)
     {
         Value val = label->getTextValue();
-        if ((float(val.getValue())>=0 && float(val.getValue())<=1))
+        if ((float(val.getValue())>=0 && float(val.getValue())<=10000))
             processor->setStimFreq(processor->getChan(), float(val.getValue()));
         else
         {
@@ -628,7 +629,7 @@ void TrackerStimulatorCanvas::labelTextChanged(Label *label)
     if (label == repetitionsEditLabel)
     {
         Value val = label->getTextValue();
-        if (int(val.getValue())>1)
+        if (int(val.getValue())>=1)
             processor->setRepetitions(processor->getChan(), int(val.getValue()));
         else
         {
@@ -651,6 +652,7 @@ void TrackerStimulatorCanvas::labelTextChanged(Label *label)
             label->setText("", dontSendNotification);
         }
     }
+	processor->updatePulsePal();
 }
 
 

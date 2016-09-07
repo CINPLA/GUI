@@ -253,7 +253,7 @@ void TrackerStimulator::process(AudioSampleBuffer& buffer, MidiBuffer& events)
             if (m_timePassed >= float(1/m_stimFreq[m_chan]))
             {
                 // trigger selected channel
-                m_pulsePal.triggerChannel(m_chan);
+                m_pulsePal.triggerChannel(m_chan + 1);
                 m_previousTime = Time::currentTimeMillis();
                 m_timePassed = 0;
             }
@@ -304,12 +304,14 @@ bool TrackerStimulator::stimulate()
 
 bool TrackerStimulator::positionDisplayedIsUpdated() const
 {
-    return m_positionDisplayedIsUpdated;
+    //return m_positionDisplayedIsUpdated;
+	return m_positionIsUpdated;
 }
 
 void TrackerStimulator::clearPositionDisplayedUpdated()
 {
-    m_positionDisplayedIsUpdated = false;
+    //m_positionDisplayedIsUpdated = false;
+	m_positionIsUpdated = false;
 }
 
 
@@ -336,18 +338,28 @@ bool TrackerStimulator::updatePulsePal()
         m_pulsePal.setInterPhaseInterval(actual_chan, float(m_interPhaseInt[m_chan])/10e6);
 
         m_pulsePal.setPulseTrainDuration(actual_chan, float(m_interPulseInt[m_chan])/10e6 * m_repetitions[m_chan]);
+		return true;
     }
     else
+	{
         CoreServices::sendStatusMessage("PulsePal is not connected!");
+		return false;
+	}
 }
 
 bool TrackerStimulator::testStimulation(){
 
     // check that Pulspal is connected and update param
-    if (m_pulsePalVersion != 0)
+    if (m_pulsePalVersion > 0)
+	{
         m_pulsePal.triggerChannel(m_chan + 1);
+		return true;
+	}
     else
+	{
         CoreServices::sendStatusMessage("PulsePal is not connected!");
+		return false;
+	}
 
 } //test from Editor
 
