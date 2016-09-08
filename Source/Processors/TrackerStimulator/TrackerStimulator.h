@@ -7,9 +7,9 @@
 
 #include <vector>
 
-#define DEF_PHASE_DURATION 100
-#define DEF_INTER_PHASE 100
-#define DEF_INTER_PULSE 200
+#define DEF_PHASE_DURATION 1
+#define DEF_INTER_PHASE 1
+#define DEF_INTER_PULSE 2
 #define DEF_REPETITIONS 1
 #define DEF_VOLTAGE 5
 #define DEF_FREQ 2
@@ -94,11 +94,11 @@ public:
 
     bool getIsBiphasic(int chan) const;
     bool getNegFirst(int chan) const;
-    int getPhaseDuration(int chan) const;
-    int getInterPhaseInt(int chan) const;
+    float getPhaseDuration(int chan) const;
+    float getInterPhaseInt(int chan) const;
     float getVoltage(int chan) const;
     int getRepetitions(int chan) const;
-    int getInterPulseInt(int chan) const;
+    float getInterPulseInt(int chan) const;
 
     void setStimFreq(int chan, float stimFreq);
     void setStimElectrode(int chan, int stimElectrode);
@@ -106,11 +106,11 @@ public:
 
     void setIsBiphasic(int chan, bool isBiphasic);
     void setNegFirst(int chan, bool negFirst);
-    void setPhaseDuration(int chan, int phaseDuration);
-    void setInterPhaseInt(int chan, int interPhaseInt);
+    void setPhaseDuration(int chan, float phaseDuration);
+    void setInterPhaseInt(int chan, float interPhaseInt);
     void setVoltage(int chan, float voltage);
     void setRepetitions(int chan, int rep);
-    void setInterPulseInt(int chan, int interPulseInt);
+    void setInterPulseInt(int chan, float interPulseInt);
     void setChan(int chan);
 
     void clearPositionDisplayedUpdated();
@@ -159,11 +159,11 @@ private:
     // Pulse params
     vector<int> m_isBiphasic;
     vector<int> m_negativeFirst;
-    vector<int> m_phaseDuration; // us
-    vector<int> m_interPhaseInt; // us
+    vector<float> m_phaseDuration; // ms
+    vector<float> m_interPhaseInt; // ms
     vector<int> m_repetitions;
     vector<float> m_voltage; // V
-    vector<int> m_interPulseInt; // us
+    vector<float> m_interPulseInt; // ms
 
     // Selected stimulation chan
     int m_chan;

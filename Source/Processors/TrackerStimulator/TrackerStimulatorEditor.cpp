@@ -24,8 +24,9 @@ TrackerStimulatorEditor::TrackerStimulatorEditor(GenericProcessor* parentNode, b
     // Add buttons
 
     // Stimulate (toggle)
-    stimulateButton = new UtilityButton("ON", Font("Small Text", 13, Font::plain));
-    stimulateButton->setRadius(3.0f); // sets the radius of the button's corners
+//    stimulateButton = new TextButton("ON", Font("Small Text", 13, Font::plain));
+    stimulateButton = new TextButton("OFF");
+//    stimulateButton->setRadius(3.0f); // sets the radius of the button's corners
     stimulateButton->setBounds(60, 40, 80, 30); // sets the x position, y position, width, and height of the button
     stimulateButton->addListener(this); // allows the editor to respond to clicks
     stimulateButton->setClickingTogglesState(true); // makes the button toggle its state when clicked
@@ -80,10 +81,12 @@ void TrackerStimulatorEditor::buttonCallback(Button* button)
         if (button->getToggleState()==true){
             TrackerStimulator *p= (TrackerStimulator *)getProcessor();
             p->startStimulation();
+            stimulateButton->setButtonText(String("ON"));
         }
         else {
             TrackerStimulator *p= (TrackerStimulator *)getProcessor();
             p->stopStimulation();
+            stimulateButton->setButtonText(String("OFF"));
         }
     }
 

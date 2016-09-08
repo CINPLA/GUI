@@ -21,7 +21,7 @@ public:
 
 private:
     // Transmit button
-    ScopedPointer<UtilityButton> stimulateButton;
+    ScopedPointer<TextButton> stimulateButton;
 
     // Transmit button
     ScopedPointer<UtilityButton> testPatternButton;

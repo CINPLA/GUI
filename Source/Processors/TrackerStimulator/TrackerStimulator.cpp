@@ -40,11 +40,11 @@ TrackerStimulator::TrackerStimulator()
     m_stimFreq = vector<float>(m_tot_chan, DEF_FREQ);
     m_stimElectrode = vector<int>(m_tot_chan, 0);
 
-    m_phaseDuration = vector<int>(m_tot_chan, DEF_PHASE_DURATION);
-    m_interPhaseInt = vector<int>(m_tot_chan, DEF_INTER_PHASE);
+    m_phaseDuration = vector<float>(m_tot_chan, DEF_PHASE_DURATION);
+    m_interPhaseInt = vector<float>(m_tot_chan, DEF_INTER_PHASE);
     m_repetitions = vector<int>(m_tot_chan, DEF_REPETITIONS);
     m_voltage = vector<float>(m_tot_chan, DEF_VOLTAGE);
-    m_interPulseInt = vector<int>(m_tot_chan, DEF_INTER_PULSE);
+    m_interPulseInt = vector<float>(m_tot_chan, DEF_INTER_PULSE);
 
     m_isUniform = vector<int>(m_tot_chan, 1);
     m_isBiphasic = vector<int>(m_tot_chan, 1);
@@ -150,11 +150,11 @@ bool TrackerStimulator::getNegFirst(int chan) const
     else
         return false;
 }
-int TrackerStimulator::getPhaseDuration(int chan) const
+float TrackerStimulator::getPhaseDuration(int chan) const
 {
     return m_phaseDuration[chan];
 }
-int TrackerStimulator::getInterPhaseInt(int chan) const
+float TrackerStimulator::getInterPhaseInt(int chan) const
 {
     return m_interPhaseInt[chan];
 }
@@ -166,7 +166,7 @@ int TrackerStimulator::getRepetitions(int chan) const
 {
     return m_repetitions[chan];
 }
-int TrackerStimulator::getInterPulseInt(int chan) const
+float TrackerStimulator::getInterPulseInt(int chan) const
 {
     return m_interPulseInt[chan];
 }
@@ -201,12 +201,12 @@ void TrackerStimulator::setNegFirst(int chan, bool negFirst)
         m_negativeFirst[chan] = 0;
 
 }
-void TrackerStimulator::setPhaseDuration(int chan, int phaseDuration)
+void TrackerStimulator::setPhaseDuration(int chan, float phaseDuration)
 {
     m_phaseDuration[chan] = phaseDuration;
     updatePulsePal();
 }
-void TrackerStimulator::setInterPhaseInt(int chan, int interPhaseInt)
+void TrackerStimulator::setInterPhaseInt(int chan, float interPhaseInt)
 {
     m_interPhaseInt[chan] = interPhaseInt;
     updatePulsePal();
@@ -221,7 +221,7 @@ void TrackerStimulator::setRepetitions(int chan, int rep)
     m_repetitions[chan] = rep;
     updatePulsePal();
 }
-void TrackerStimulator::setInterPulseInt(int chan, int interPulseInt)
+void TrackerStimulator::setInterPulseInt(int chan, float interPulseInt)
 {
     m_interPulseInt[chan] = interPulseInt;
     updatePulsePal();
@@ -333,11 +333,11 @@ bool TrackerStimulator::updatePulsePal()
             m_pulsePal.setPhase2Voltage(actual_chan, - m_voltage[m_chan]);
         }
 
-        m_pulsePal.setPhase1Duration(actual_chan, float(m_phaseDuration[m_chan])/10e6);
-        m_pulsePal.setPhase2Duration(actual_chan, float(m_phaseDuration[m_chan])/10e6);
-        m_pulsePal.setInterPhaseInterval(actual_chan, float(m_interPhaseInt[m_chan])/10e6);
+        m_pulsePal.setPhase1Duration(actual_chan, float(m_phaseDuration[m_chan])/10e3);
+        m_pulsePal.setPhase2Duration(actual_chan, float(m_phaseDuration[m_chan])/10e3);
+        m_pulsePal.setInterPhaseInterval(actual_chan, float(m_interPhaseInt[m_chan])/10e3);
 
-        m_pulsePal.setPulseTrainDuration(actual_chan, float(m_interPulseInt[m_chan])/10e6 * m_repetitions[m_chan]);
+        m_pulsePal.setPulseTrainDuration(actual_chan, float(m_interPulseInt[m_chan])/10e3 * m_repetitions[m_chan]);
 		return true;
     }
     else

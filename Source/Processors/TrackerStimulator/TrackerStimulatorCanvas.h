@@ -43,6 +43,8 @@ public:
     virtual void setParameter(int, int, int, float);
 
     bool getUpdateCircle();
+    void setUpdateCircle(bool onoff);
+    bool areThereCicles();
     void setOnButton();
     float my_round(float x);
 
@@ -97,6 +99,8 @@ private:
     TrackerStimulator* processor;
     float m_x;
     float m_y;
+    float m_prevx;
+    float m_prevy;
     float m_width;
     float m_height;
 
