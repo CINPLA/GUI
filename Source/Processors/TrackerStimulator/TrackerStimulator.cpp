@@ -274,10 +274,17 @@ void TrackerStimulator::handleEvent(int eventType, MidiMessage &event, int sampl
             cout << "Position tracker got wrong event size x,y,width,height was expected: " << event.getRawDataSize() << endl;
         }
         const float* message = (float*)(rawData+6);
-        m_x = message[0];
-        m_y = message[1];
-        m_width = message[2];
-        m_height = message[3];
+
+		if(!(message[0] != message[0] || message[1] != message[1]) && message[0] != 0 && message[1] != 0)
+		{
+			m_x = message[0];
+			m_y = message[1];
+		}
+		if(!(message[2] != message[2] || message[3] != message[3]))
+		{
+			m_width = message[2];
+			m_height = message[3];
+		}
         m_positionIsUpdated = true;
     }
 
@@ -317,32 +324,59 @@ void TrackerStimulator::clearPositionDisplayedUpdated()
 
 bool TrackerStimulator::updatePulsePal()
 {
-    // check that Pulspal is connected and update param
-    if (m_pulsePalVersion != 0)
-    {
-        int actual_chan = m_chan+1;
-        m_pulsePal.setBiphasic(actual_chan, m_isBiphasic[m_chan]);
-        if (m_negativeFirst[m_chan])
-        {
-            m_pulsePal.setPhase1Voltage(actual_chan, - m_voltage[m_chan]);
-            m_pulsePal.setPhase2Voltage(actual_chan, m_voltage[m_chan]);
-        }
-        else
-        {
-            m_pulsePal.setPhase1Voltage(actual_chan, m_voltage[m_chan]);
-            m_pulsePal.setPhase2Voltage(actual_chan, - m_voltage[m_chan]);
-        }
-
-        m_pulsePal.setPhase1Duration(actual_chan, float(m_phaseDuration[m_chan])/10e3);
-        m_pulsePal.setPhase2Duration(actual_chan, float(m_phaseDuration[m_chan])/10e3);
-        m_pulsePal.setInterPhaseInterval(actual_chan, float(m_interPhaseInt[m_chan])/10e3);
-
-        m_pulsePal.setPulseTrainDuration(actual_chan, float(m_interPulseInt[m_chan])/10e3 * m_repetitions[m_chan]);
-		return true;
-    }
-    else
+	// check that Pulspal is connected and update param
+	if (m_pulsePalVersion != 0)
 	{
-        CoreServices::sendStatusMessage("PulsePal is not connected!");
+		int actual_chan = m_chan+1;
+		float pulse_duration = 0;
+		m_pulsePal.setBiphasic(actual_chan, m_isBiphasic[m_chan]);
+		if (m_isBiphasic[m_chan])
+		{
+			//pulse_duration = float(m_phaseDuration[m_chan])/1000*2 + float(m_interPhaseInt[m_chan])/1000;
+			m_pulsePal.setPhase1Duration(actual_chan, float(m_phaseDuration[m_chan])/1000);
+			m_pulsePal.setPhase2Duration(actual_chan, float(m_phaseDuration[m_chan])/1000);
+			m_pulsePal.setInterPhaseInterval(actual_chan, float(m_interPhaseInt[m_chan])/1000);
+			if (m_negativeFirst[m_chan])
+			{
+				m_pulsePal.setPhase1Voltage(actual_chan, - m_voltage[m_chan]);
+				m_pulsePal.setPhase2Voltage(actual_chan, m_voltage[m_chan]);
+			}
+			else
+			{
+				m_pulsePal.setPhase1Voltage(actual_chan, m_voltage[m_chan]);
+				m_pulsePal.setPhase2Voltage(actual_chan, - m_voltage[m_chan]);
+			}
+		}
+		else
+		{
+			pulse_duration = float(m_phaseDuration[m_chan])/1000;
+			m_pulsePal.setPhase1Duration(actual_chan, float(m_phaseDuration[m_chan])/1000);
+			m_pulsePal.setPhase2Duration(actual_chan, 0);
+			m_pulsePal.setInterPhaseInterval(actual_chan, 0);
+			if (m_negativeFirst[m_chan])
+			{
+				m_pulsePal.setPhase1Voltage(actual_chan, - m_voltage[m_chan]);
+			}
+			else
+			{
+				m_pulsePal.setPhase1Voltage(actual_chan, m_voltage[m_chan]);
+			}
+
+		}
+
+		float train_duration = float(m_interPulseInt[m_chan])/1000 * m_repetitions[m_chan] + float(m_phaseDuration[m_chan])/1000;
+		m_pulsePal.setPulseTrainDuration(actual_chan, train_duration);
+
+		if (m_repetitions[m_chan]>1)
+		{			
+			m_pulsePal.setInterPulseInterval(actual_chan, float(m_interPulseInt[m_chan])/1000);			
+		}
+
+		return true;
+	}
+	else
+	{
+		CoreServices::sendStatusMessage("PulsePal is not connected!");
 		return false;
 	}
 }

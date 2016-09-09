@@ -210,7 +210,7 @@ def streaming():
                 gridOccupancy = spikePerGrid/np.sum(spikePerGrid)
                 for neur in range(0, len(neuronIDList)):
                     # current Firing Map
-                    newFM = np.zeros(N_GRID, N_GRID)
+                    newFM = np.zeros((N_GRID, N_GRID))
                     for ii in range(N_GRID):
                         for jj in range(N_GRID):
                             if gridOccupancy[ii][jj] > occupancy_thresh:
