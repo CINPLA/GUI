@@ -22,6 +22,11 @@ TrackerStimulatorCanvas::TrackerStimulatorCanvas(TrackerStimulator* trackerStimu
     , m_height(1.0)
     , m_updateCircle(false)
     , m_onoff(false)
+    , buttonTextColour(Colour(255,255,255))
+    , labelColour(Colour(200, 255, 0))
+    , labelTextColour(Colour(255, 200, 0))
+    , labelBackgroundColour(Colour(100,100,100))
+    , backgroundColour(Colours::black)
 {
     // Setup buttons
     initButtons();
@@ -69,7 +74,7 @@ void TrackerStimulatorCanvas::paint (Graphics& g)
 //    int camHeight = (aS > aC) ? getHeight() : getHeight() * (aS / aC);
 //    int camWidth = (aS < aC) ? getWidth() : getWidth() * (aC / aS);
 
-    g.setColour(Colours::black); // backbackround color
+    g.setColour(backgroundColour); // backbackround color
     g.fillRect(0, 0, getWidth(), getHeight());
 
     //    g.setColour(Colour(0,18,43)); //background color
@@ -77,13 +82,18 @@ void TrackerStimulatorCanvas::paint (Graphics& g)
 
     // on-off LED
     if (m_onoff)
-        g.setColour(Colour(200,255,30));
+        g.setColour(labelColour);
     else
-        g.setColour(Colour(Colours::grey));
+        g.setColour(labelBackgroundColour);
     g.fillEllipse(getWidth() - 0.065*getWidth(), 0.25*getHeight(), 0.03*getWidth(), 0.03*getHeight());
     //DEBUG
 //    m_updateCircle = false;
 
+    // Check pulse Pal connection
+    if (processor->getPulsePalVersion() > 0)
+        pulsePalLabel->setText(String("Pulse Pal: ") +=  String("CONNECTED"), dontSendNotification);
+    else
+        pulsePalLabel->setText(String("Pulse Pal: ") +=  String("NOT CONNECTED"), dontSendNotification);
 }
 
 void TrackerStimulatorCanvas::resized()
@@ -110,16 +120,16 @@ void TrackerStimulatorCanvas::resized()
         circlesButton[i]->setVisible(false);
     }
 
-    uniformButton->setBounds(getWidth() - 0.2*getWidth(), 0.4*getHeight(), 0.09*getWidth(),0.03*getHeight());
-    gaussianButton->setBounds(getWidth() - 0.2*getWidth() + 0.09*getWidth(), 0.4*getHeight(), 0.09*getWidth(),0.03*getHeight());
+    uniformButton->setBounds(getWidth() - 0.2*getWidth(), 0.35*getHeight(), 0.09*getWidth(),0.03*getHeight());
+    gaussianButton->setBounds(getWidth() - 0.2*getWidth() + 0.09*getWidth(), 0.35*getHeight(), 0.09*getWidth(),0.03*getHeight());
 
-    biphasicButton->setBounds(getWidth() - 0.2*getWidth(), 0.6*getHeight(), 0.18*getWidth(),0.03*getHeight());
-    negFirstButton->setBounds(getWidth() - 0.2*getWidth(), 0.65*getHeight(), 0.09*getWidth(),0.03*getHeight());
-    posFirstButton->setBounds(getWidth() - 0.2*getWidth() + 0.09*getWidth(), 0.65*getHeight(), 0.09*getWidth(),0.03*getHeight());
-    chan1Button->setBounds(getWidth() - 0.2*getWidth(), 0.7*getHeight(), 0.045*getWidth(),0.03*getHeight());
-    chan2Button->setBounds(getWidth() - 0.2*getWidth() + 0.045*getWidth(), 0.7*getHeight(), 0.045*getWidth(),0.03*getHeight());
-    chan3Button->setBounds(getWidth() - 0.2*getWidth() + 0.09 *getWidth(), 0.7*getHeight(), 0.045*getWidth(),0.03*getHeight());
-    chan4Button->setBounds(getWidth() - 0.2*getWidth() + 0.135*getWidth(), 0.7*getHeight(), 0.045*getWidth(),0.03*getHeight());
+    biphasicButton->setBounds(getWidth() - 0.2*getWidth(), 0.55*getHeight(), 0.18*getWidth(),0.03*getHeight());
+    negFirstButton->setBounds(getWidth() - 0.2*getWidth(), 0.6*getHeight(), 0.09*getWidth(),0.03*getHeight());
+    posFirstButton->setBounds(getWidth() - 0.2*getWidth() + 0.09*getWidth(), 0.6*getHeight(), 0.09*getWidth(),0.03*getHeight());
+    chan1Button->setBounds(getWidth() - 0.2*getWidth(), 0.65*getHeight(), 0.045*getWidth(),0.03*getHeight());
+    chan2Button->setBounds(getWidth() - 0.2*getWidth() + 0.045*getWidth(), 0.65*getHeight(), 0.045*getWidth(),0.03*getHeight());
+    chan3Button->setBounds(getWidth() - 0.2*getWidth() + 0.09 *getWidth(), 0.65*getHeight(), 0.045*getWidth(),0.03*getHeight());
+    chan4Button->setBounds(getWidth() - 0.2*getWidth() + 0.135*getWidth(), 0.65*getHeight(), 0.045*getWidth(),0.03*getHeight());
 
 
 
@@ -128,27 +138,31 @@ void TrackerStimulatorCanvas::resized()
     cyLabel->setBounds(getWidth() - 0.2*getWidth(), 0.15*getHeight(), 0.06*getWidth(),0.04*getHeight());
     cradLabel->setBounds(getWidth() - 0.2*getWidth(), 0.2*getHeight(), 0.06*getWidth(),0.04*getHeight());
 
-    fmaxLabel->setBounds(getWidth() - 0.2*getWidth(), 0.45*getHeight(), 0.1*getWidth(),0.04*getHeight());
-    elecLabel->setBounds(getWidth() - 0.2*getWidth(), 0.5*getHeight(), 0.1*getWidth(),0.04*getHeight());
+    pulsePalLabel->setBounds(getWidth() - 0.2*getWidth(), 0.3*getHeight(), 0.18*getWidth(),0.04*getHeight());
+    fmaxLabel->setBounds(getWidth() - 0.2*getWidth(), 0.4*getHeight(), 0.1*getWidth(),0.04*getHeight());
+    elecLabel->setBounds(getWidth() - 0.2*getWidth(), 0.45*getHeight(), 0.1*getWidth(),0.04*getHeight());
 
-    phaseLabel->setBounds(getWidth() - 0.2*getWidth(), 0.75*getHeight(), 0.1*getWidth(),0.04*getHeight());
-    interphaseLabel->setBounds(getWidth() - 0.2*getWidth(), 0.8*getHeight(), 0.1*getWidth(),0.04*getHeight());
-    voltageLabel->setBounds(getWidth() - 0.2*getWidth(), 0.85*getHeight(), 0.1*getWidth(),0.04*getHeight());
+    phaseLabel->setBounds(getWidth() - 0.2*getWidth(), 0.7*getHeight(), 0.1*getWidth(),0.04*getHeight());
+    interphaseLabel->setBounds(getWidth() - 0.2*getWidth(), 0.75*getHeight(), 0.1*getWidth(),0.04*getHeight());
+    voltageLabel->setBounds(getWidth() - 0.2*getWidth(), 0.8*getHeight(), 0.1*getWidth(),0.04*getHeight());
+    interpulseLabel->setBounds(getWidth() - 0.2*getWidth(), 0.85*getHeight(), 0.1*getWidth(),0.04*getHeight());
     repetitionsLabel->setBounds(getWidth() - 0.2*getWidth(), 0.9*getHeight(), 0.1*getWidth(),0.04*getHeight());
-    interpulseLabel->setBounds(getWidth() - 0.2*getWidth(), 0.95*getHeight(), 0.1*getWidth(),0.04*getHeight());
+    trainDurationLabel->setBounds(getWidth() - 0.2*getWidth(), 0.95*getHeight(), 0.1*getWidth(),0.04*getHeight());
+
 
     // Edit Labels
     cxEditLabel->setBounds(getWidth() - 0.14*getWidth(), 0.1*getHeight(), 0.06*getWidth(),0.04*getHeight());
     cyEditLabel->setBounds(getWidth() - 0.14*getWidth(), 0.15*getHeight(), 0.06*getWidth(),0.04*getHeight());
     cradEditLabel->setBounds(getWidth() - 0.14*getWidth(), 0.2*getHeight(), 0.06*getWidth(),0.04*getHeight());
 
-    fmaxEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.45*getHeight(), 0.08*getWidth(),0.04*getHeight());
-    elecEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.5*getHeight(), 0.08*getWidth(),0.04*getHeight());
+    fmaxEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.4*getHeight(), 0.08*getWidth(),0.04*getHeight());
+    elecEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.45*getHeight(), 0.08*getWidth(),0.04*getHeight());
 
-    phaseEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.75*getHeight(), 0.08*getWidth(),0.04*getHeight());
-    interphaseEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.8*getHeight(), 0.08*getWidth(),0.04*getHeight());
-    voltageEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.85*getHeight(), 0.08*getWidth(),0.04*getHeight());
-    repetitionsEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.9*getHeight(), 0.08*getWidth(),0.04*getHeight());
+    phaseEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.7*getHeight(), 0.08*getWidth(),0.04*getHeight());
+    interphaseEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.75*getHeight(), 0.08*getWidth(),0.04*getHeight());
+    voltageEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.8*getHeight(), 0.08*getWidth(),0.04*getHeight());
+    repetitionsEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.85*getHeight(), 0.08*getWidth(),0.04*getHeight());
+    trainDurationEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.9*getHeight(), 0.08*getWidth(),0.04*getHeight());
     interpulseEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.95*getHeight(), 0.08*getWidth(),0.04*getHeight());
 
 
@@ -748,7 +762,7 @@ void TrackerStimulatorCanvas::initButtons()
     editButton = new UtilityButton("Edit", Font("Small Text", 13, Font::plain));
     editButton->setRadius(3.0f);
     editButton->addListener(this);
-    editButton->setColour(TextButton::buttonColourId, Colour(255, 255, 255));
+//    editButton->setColour(TextButton::buttonColourId, Colour(255, 255, 255));
     addAndMakeVisible(editButton);
 
     delButton = new UtilityButton("Del", Font("Small Text", 13, Font::plain));
@@ -839,141 +853,155 @@ void TrackerStimulatorCanvas::initLabels()
     // Static Labels
     cxLabel = new Label("s_cx", "xpos [%]:");
     cxLabel->setFont(Font(15));
-    cxLabel->setColour(Label::textColourId, Colour(200, 255, 0));
+    cxLabel->setColour(Label::textColourId, labelColour);
     addAndMakeVisible(cxLabel);
 
     cyLabel = new Label("s_cy", "ypos [%]:");
     cyLabel->setFont(Font(15));
-    cyLabel->setColour(Label::textColourId, Colour(200, 255, 0));
+    cyLabel->setColour(Label::textColourId, labelColour);
     addAndMakeVisible(cyLabel);
 
     cradLabel = new Label("s_crad", "radius [%]:");
     cradLabel->setFont(Font(15));
-    cradLabel->setColour(Label::textColourId, Colour(200, 255, 0));
+    cradLabel->setColour(Label::textColourId, labelColour);
     addAndMakeVisible(cradLabel);
+
+    pulsePalLabel = new Label("s_pulsePal", "Pulse Pal Status: ");
+    pulsePalLabel->setFont(Font(20));
+    pulsePalLabel->setColour(Label::textColourId, labelColour);
+    addAndMakeVisible(pulsePalLabel);
 
     fmaxLabel = new Label("s_fmax", "fmax [Hz]:");
     fmaxLabel->setFont(Font(20));
-    fmaxLabel->setColour(Label::textColourId, Colour(200, 255, 0));
+    fmaxLabel->setColour(Label::textColourId, labelColour);
     addAndMakeVisible(fmaxLabel);
 
     elecLabel = new Label("s_elec", "# electrode:");
     elecLabel->setFont(Font(20));
-    elecLabel->setColour(Label::textColourId, Colour(200, 255, 0));
+    elecLabel->setColour(Label::textColourId, labelColour);
     addAndMakeVisible(elecLabel);
 
     pulsePalLabel = new Label("s_pp", "Pulse Pal:");
     pulsePalLabel->setFont(Font(20));
-    pulsePalLabel->setColour(Label::textColourId, Colour(200, 255, 0));
+    pulsePalLabel->setColour(Label::textColourId, labelColour);
     addAndMakeVisible(pulsePalLabel);
-
-    pulsePalStatusLabel = new Label("s_pp", "Pulse Pal:");
-    pulsePalStatusLabel->setFont(Font(20));
-    pulsePalStatusLabel->setColour(Label::textColourId, Colour(200, 255, 0));
-    addAndMakeVisible(pulsePalStatusLabel);
 
     phaseLabel = new Label("s_phase", "phase [ms]:");
     phaseLabel->setFont(Font(15));
-    phaseLabel->setColour(Label::textColourId, Colour(200, 255, 0));
+    phaseLabel->setColour(Label::textColourId, labelColour);
     addAndMakeVisible(phaseLabel);
 
     interphaseLabel = new Label("s_interphase", "interphase [ms]:");
     interphaseLabel->setFont(Font(15));
-    interphaseLabel->setColour(Label::textColourId, Colour(200, 255, 0));
+    interphaseLabel->setColour(Label::textColourId, labelColour);
     addAndMakeVisible(interphaseLabel);
 
     voltageLabel = new Label("s_voltage", "voltage [V]:");
     voltageLabel->setFont(Font(15));
-    voltageLabel->setColour(Label::textColourId, Colour(200, 255, 0));
+    voltageLabel->setColour(Label::textColourId, labelColour);
     addAndMakeVisible(voltageLabel);
-
-    interpulseLabel = new Label("s_interpulse", "interpulse [ms]:");
-    interpulseLabel->setFont(Font(15));
-    interpulseLabel->setColour(Label::textColourId, Colour(200, 255, 0));
-    addAndMakeVisible(interpulseLabel);
 
     repetitionsLabel = new Label("s_repetitions", "repetitions:");
     repetitionsLabel->setFont(Font(15));
-    repetitionsLabel->setColour(Label::textColourId, Colour(200, 255, 0));
+    repetitionsLabel->setColour(Label::textColourId, labelColour);
     addAndMakeVisible(repetitionsLabel);
+
+    trainDurationLabel = new Label("s_trainDuration", "trainDuration [ms]:");
+    trainDurationLabel->setFont(Font(15));
+    trainDurationLabel->setColour(Label::textColourId, labelColour);
+    addAndMakeVisible(trainDurationLabel);
+
+    interpulseLabel = new Label("s_interpulse", "interpulse [ms]:");
+    interpulseLabel->setFont(Font(15));
+    interpulseLabel->setColour(Label::textColourId, labelColour);
+    addAndMakeVisible(interpulseLabel);
+
 
     // Edit Labels
     cxEditLabel = new Label("cx", " ");
     cxEditLabel->setFont(Font(15));
-    cxEditLabel->setColour(Label::textColourId, Colour(200, 200, 0));
-    cxEditLabel->setColour(Label::backgroundColourId, Colours::grey);
+    cxEditLabel->setColour(Label::textColourId, labelTextColour);
+    cxEditLabel->setColour(Label::backgroundColourId, labelBackgroundColour);
     cxEditLabel->setEditable(true);
     cxEditLabel->addListener(this);
     addAndMakeVisible(cxEditLabel);
 
     cyEditLabel = new Label("cy", " ");
     cyEditLabel->setFont(Font(15));
-    cyEditLabel->setColour(Label::textColourId, Colour(200, 200, 0));
-    cyEditLabel->setColour(Label::backgroundColourId, Colours::grey);
+    cyEditLabel->setColour(Label::textColourId, labelTextColour);
+    cyEditLabel->setColour(Label::backgroundColourId, labelBackgroundColour);
     cyEditLabel->setEditable(true);
     cyEditLabel->addListener(this);
     addAndMakeVisible(cyEditLabel);
 
     cradEditLabel = new Label("crad", " ");
     cradEditLabel->setFont(Font(15));
-    cradEditLabel->setColour(Label::textColourId, Colour(200, 200, 0));
-    cradEditLabel->setColour(Label::backgroundColourId, Colours::grey);
+    cradEditLabel->setColour(Label::textColourId, labelTextColour);
+    cradEditLabel->setColour(Label::backgroundColourId, labelBackgroundColour);
     cradEditLabel->setEditable(true);
     cradEditLabel->addListener(this);
     addAndMakeVisible(cradEditLabel);
 
     elecEditLabel = new Label("elec", String(0));
     elecEditLabel->setFont(Font(20));
-    elecEditLabel->setColour(Label::textColourId, Colour(200, 200, 0));
-    elecEditLabel->setColour(Label::backgroundColourId, Colours::grey);
+    elecEditLabel->setColour(Label::textColourId, labelTextColour);
+    elecEditLabel->setColour(Label::backgroundColourId, labelBackgroundColour);
     elecEditLabel->setEditable(true);
     elecEditLabel->addListener(this);
     addAndMakeVisible(elecEditLabel);
 
     fmaxEditLabel = new Label("fmax", String(DEF_FREQ));
     fmaxEditLabel->setFont(Font(20));
-    fmaxEditLabel->setColour(Label::textColourId, Colour(200, 200, 0));
-    fmaxEditLabel->setColour(Label::backgroundColourId, Colours::grey);
+    fmaxEditLabel->setColour(Label::textColourId, labelTextColour);
+    fmaxEditLabel->setColour(Label::backgroundColourId, labelBackgroundColour);
     fmaxEditLabel->setEditable(true);
     fmaxEditLabel->addListener(this);
     addAndMakeVisible(fmaxEditLabel);
 
     phaseEditLabel = new Label("phase", String(DEF_PHASE_DURATION));
     phaseEditLabel->setFont(Font(15));
-    phaseEditLabel->setColour(Label::textColourId, Colour(200, 200, 0));
-    phaseEditLabel->setColour(Label::backgroundColourId, Colours::grey);
+    phaseEditLabel->setColour(Label::textColourId, labelTextColour);
+    phaseEditLabel->setColour(Label::backgroundColourId, labelBackgroundColour);
     phaseEditLabel->setEditable(true);
     phaseEditLabel->addListener(this);
     addAndMakeVisible(phaseEditLabel);
 
     interphaseEditLabel = new Label("interphase", String(DEF_INTER_PHASE));
     interphaseEditLabel->setFont(Font(15));
-    interphaseEditLabel->setColour(Label::textColourId, Colour(200, 200, 0));
-    interphaseEditLabel->setColour(Label::backgroundColourId, Colours::grey);
+    interphaseEditLabel->setColour(Label::textColourId, labelTextColour);
+    interphaseEditLabel->setColour(Label::backgroundColourId, labelBackgroundColour);
     interphaseEditLabel->setEditable(true);
     interphaseEditLabel->addListener(this);
     addAndMakeVisible(interphaseEditLabel);
 
     voltageEditLabel = new Label("voltage", String(DEF_VOLTAGE));
     voltageEditLabel->setFont(Font(15));
-    voltageEditLabel->setColour(Label::textColourId, Colour(200, 200, 0));
-    voltageEditLabel->setColour(Label::backgroundColourId, Colours::grey);
+    voltageEditLabel->setColour(Label::textColourId, labelTextColour);
+    voltageEditLabel->setColour(Label::backgroundColourId, labelBackgroundColour);
     voltageEditLabel->setEditable(true);
     voltageEditLabel->addListener(this);
     addAndMakeVisible(voltageEditLabel);
 
     repetitionsEditLabel = new Label("repetitions", String(DEF_REPETITIONS));
     repetitionsEditLabel->setFont(Font(15));
-    repetitionsEditLabel->setColour(Label::textColourId, Colour(200, 200, 0));
-    repetitionsEditLabel->setColour(Label::backgroundColourId, Colours::grey);
+    repetitionsEditLabel->setColour(Label::textColourId, labelTextColour);
+    repetitionsEditLabel->setColour(Label::backgroundColourId, labelBackgroundColour);
     repetitionsEditLabel->setEditable(true);
     repetitionsEditLabel->addListener(this);
     addAndMakeVisible(repetitionsEditLabel);
 
+    trainDurationEditLabel = new Label("trainDuration", String(DEF_INTER_PULSE));
+    trainDurationEditLabel->setFont(Font(15));
+    trainDurationEditLabel->setColour(Label::textColourId, labelTextColour);
+    trainDurationEditLabel->setColour(Label::backgroundColourId, labelBackgroundColour);
+    trainDurationEditLabel->setEditable(true);
+    trainDurationEditLabel->addListener(this);
+    addAndMakeVisible(trainDurationEditLabel);
+
     interpulseEditLabel = new Label("interpulse", String(DEF_INTER_PULSE));
     interpulseEditLabel->setFont(Font(15));
-    interpulseEditLabel->setColour(Label::textColourId, Colour(200, 200, 0));
-    interpulseEditLabel->setColour(Label::backgroundColourId, Colours::grey);
+    interpulseEditLabel->setColour(Label::textColourId, labelTextColour);
+    interpulseEditLabel->setColour(Label::backgroundColourId, labelBackgroundColour);
     interpulseEditLabel->setEditable(true);
     interpulseEditLabel->addListener(this);
     addAndMakeVisible(interpulseEditLabel);

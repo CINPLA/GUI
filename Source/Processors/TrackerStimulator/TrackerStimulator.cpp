@@ -172,6 +172,11 @@ float TrackerStimulator::getInterPulseInt(int chan) const
     return m_interPulseInt[chan];
 }
 
+uint32_t TrackerStimulator::getPulsePalVersion() const
+{
+    return m_pulsePalVersion;
+}
+
 void TrackerStimulator::setStimFreq(int chan, float stimFreq)
 {
     m_stimFreq[chan] = stimFreq;

@@ -93,6 +93,8 @@ public:
     int getRepetitions(int chan) const;
     float getInterPulseInt(int chan) const;
 
+    uint32_t getPulsePalVersion() const;
+
     void setStimFreq(int chan, float stimFreq);
     void setStimElectrode(int chan, int stimElectrode);
     void setIsUniform(int chan, bool isUniform);

@@ -82,6 +82,7 @@ public:
     ScopedPointer<Label> voltageLabel;
     ScopedPointer<Label> interpulseLabel;
     ScopedPointer<Label> repetitionsLabel;
+    ScopedPointer<Label> trainDurationLabel;
 
 
     // Labels with editable test
@@ -95,6 +96,7 @@ public:
     ScopedPointer<Label> voltageEditLabel;
     ScopedPointer<Label> interpulseEditLabel;
     ScopedPointer<Label> repetitionsEditLabel;
+    ScopedPointer<Label> trainDurationEditLabel;
 
 
 private:
@@ -112,6 +114,12 @@ private:
 
     bool m_onoff;
     bool m_updateCircle;
+
+    Colour buttonTextColour;
+    Colour labelColour;
+    Colour labelTextColour;
+    Colour labelBackgroundColour;
+    Colour backgroundColour;
 
     ScopedPointer<DisplayAxes> m_ax;
 
