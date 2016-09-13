@@ -50,6 +50,8 @@ public:
 
     // *** Maybe adjust with proper accessors instead of keep public *** //
     ScopedPointer<UtilityButton> clearButton;
+    ScopedPointer<UtilityButton> saveButton;
+    ScopedPointer<UtilityButton> loadButton;
     ScopedPointer<UtilityButton> newButton;
     ScopedPointer<UtilityButton> editButton;
     ScopedPointer<UtilityButton> delButton;

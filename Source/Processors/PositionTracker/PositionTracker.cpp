@@ -44,10 +44,16 @@ void PositionTracker::handleEvent(int eventType, MidiMessage &event, int sampleP
             cout << "Position tracker got wrong event size x,y,width,height was expected: " << event.getRawDataSize() << endl;
         }
         const float* message = (float*)(rawData+6);
-        m_x = message[0];
-        m_y = message[1];
-        m_width = message[2];
-        m_height = message[3];
+        if(!(message[0] != message[0] || message[1] != message[1]) && message[0] != 0 && message[1] != 0)
+        {
+            m_x = message[0];
+            m_y = message[1];
+        }
+        if(!(message[2] != message[2] || message[3] != message[3]))
+        {
+            m_width = message[2];
+            m_height = message[3];
+        }
         m_positionIsUpdated = true;
 //        std::cout << "x " << m_x << " y " << m_y << std::endl;
     }

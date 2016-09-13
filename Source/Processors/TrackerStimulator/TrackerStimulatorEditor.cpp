@@ -18,6 +18,7 @@ TrackerStimulatorEditor::TrackerStimulatorEditor(GenericProcessor* parentNode, b
     : VisualizerEditor(parentNode, useDefaultParameterEditors)
 
 {
+    tabText = "TrackerStimulator";
     desiredWidth = 200;
 
 

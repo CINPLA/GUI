@@ -70,13 +70,6 @@ public:
     float getWidth() const;
     float getHeight() const;
 
-//    float getCx() const;
-//    float getCy() const;
-//    float getCradius() const;
-//    void setCx(float cx);
-//    void setCy(float cy);
-//    void setCradius(float radius);
-
     vector<Circle> getCircles();
     void addCircle(Circle c);
     void editCircle(int ind, float x, float y, float rad, bool on);
@@ -122,6 +115,12 @@ public:
     bool isReady();
 
 
+    void save();
+    void saveAs();
+    void load();
+
+
+
 
 private:
 
@@ -162,6 +161,7 @@ private:
     vector<float> m_phaseDuration; // ms
     vector<float> m_interPhaseInt; // ms
     vector<int> m_repetitions;
+    vector<float> m_trainDuration;
     vector<float> m_voltage; // V
     vector<float> m_interPulseInt; // ms
 
@@ -173,8 +173,14 @@ private:
     PulsePal m_pulsePal;
     uint32_t m_pulsePalVersion;
 
+    File currentConfigFile;
+
     // Stimulate decision
     bool stimulate();
+
+    bool saveParametersXml();
+    bool loadParametersXml();
+
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TrackerStimulator)
 

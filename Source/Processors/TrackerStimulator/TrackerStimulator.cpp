@@ -16,8 +16,8 @@
 TrackerStimulator::TrackerStimulator()
     : GenericProcessor("Tracker Stimulator")
     , m_isOn(false)
-    , m_x(0.)
-    , m_y(0.)
+    , m_x(-1.0)
+    , m_y(-1.0)
     , m_height(1.0)
     , m_width(1.0)
     , m_positionIsUpdated(false)
@@ -45,6 +45,7 @@ TrackerStimulator::TrackerStimulator()
     m_repetitions = vector<int>(m_tot_chan, DEF_REPETITIONS);
     m_voltage = vector<float>(m_tot_chan, DEF_VOLTAGE);
     m_interPulseInt = vector<float>(m_tot_chan, DEF_INTER_PULSE);
+    m_trainDuration = vector<float>(m_tot_chan, DEF_INTER_PULSE);
 
     m_isUniform = vector<int>(m_tot_chan, 1);
     m_isBiphasic = vector<int>(m_tot_chan, 1);
@@ -413,6 +414,88 @@ bool TrackerStimulator::isReady()
 {
     return true;
 }
+
+bool TrackerStimulator::saveParametersXml()
+{
+    //Save
+    XmlElement* state = new XmlElement("TrackerStimulatorState");
+
+    // save circles
+    XmlElement* circles = new XmlElement("Circles");
+    for (int i=0; i<m_circles.size(); i++)
+    {
+        XmlElement* circ = new XmlElement(String("Circles_")+=String(i));
+        circ->setAttribute("id", i);
+        circ->setAttribute("xpos", m_circles[i].getX());
+        circ->setAttribute("ypos", m_circles[i].getY());
+        circ->setAttribute("rad", m_circles[i].getRad());
+        circ->setAttribute("on", m_circles[i].getOn());
+
+        circles->addChildElement(circ);
+    }
+    // save stimulator conf
+    XmlElement* channels = new XmlElement("Channels");
+    for (int i=0; i<4; i++)
+    {
+        XmlElement* chan = new XmlElement(String("Chan_")+=String(i+1));
+        chan->setAttribute("id", i);
+        chan->setAttribute("freq", m_stimFreq[i]);
+        chan->setAttribute("elec", m_stimElectrode[i]);
+        chan->setAttribute("biphasic", m_isBiphasic[i]);
+        chan->setAttribute("negative", m_negativeFirst[i]);
+        chan->setAttribute("phase", m_phaseDuration[i]);
+        chan->setAttribute("interphase", m_interPhaseInt[i]);
+        chan->setAttribute("voltage", m_voltage[i]);
+        chan->setAttribute("repetitions", m_repetitions[i]);
+        chan->setAttribute("trainduration", m_trainDuration[i]);
+        chan->setAttribute("interpulse", m_interPulseInt[i]);
+
+        channels->addChildElement(chan);
+    }
+
+    state->addChildElement(circles);
+    state->addChildElement(channels);
+
+    if (! state->writeToFile(currentConfigFile, String::empty))
+        return false;
+    else
+        return true;
+
+
+}
+bool TrackerStimulator::loadParametersXml()
+{
+
+}
+
+void TrackerStimulator::save()
+{
+    if (currentConfigFile.exists())
+    {
+        saveParametersXml();
+    }
+    else
+    {
+        FileChooser fc("Choose the file name...",
+                       File::getCurrentWorkingDirectory(),
+                       "*.xml");
+
+        if (fc.browseForFileToSave(true))
+        {
+            currentConfigFile = fc.getResult();
+            std::cout << currentConfigFile.getFileName() << std::endl;
+            saveParametersXml();
+        }
+        else
+        {
+            //sendActionMessage("No file chosen.");
+        }
+
+    }
+}
+
+void TrackerStimulator::load()
+{}
 
 
 // Circle methods

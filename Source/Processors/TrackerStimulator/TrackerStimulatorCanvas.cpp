@@ -94,6 +94,8 @@ void TrackerStimulatorCanvas::resized()
     // Express all positions as proportion of height and width
     // Buttons
     clearButton->setBounds(getWidth() - 0.35*getWidth(), getHeight()-0.1*getHeight(), 0.1*getWidth(),0.05*getHeight());
+    saveButton->setBounds(getWidth() - 0.35*getWidth(), getHeight()-0.3*getHeight(), 0.1*getWidth(),0.05*getHeight());
+    loadButton->setBounds(getWidth() - 0.35*getWidth(), getHeight()-0.2*getHeight(), 0.1*getWidth(),0.05*getHeight());
 
     newButton->setBounds(getWidth() - 0.2*getWidth(), 0.05*getHeight(), 0.06*getWidth(),0.04*getHeight());
     editButton->setBounds(getWidth() - 0.14*getWidth(), 0.05*getHeight(), 0.06*getWidth(),0.04*getHeight());
@@ -172,6 +174,14 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
     if (button == clearButton)
     {
         clear();
+    }
+    else if (button == saveButton)
+    {
+        processor->save();
+    }
+    else if (button == loadButton)
+    {
+        processor->load();
     }
     else if (button == newButton)
     {
@@ -719,6 +729,16 @@ void TrackerStimulatorCanvas::initButtons()
     clearButton->setRadius(3.0f);
     clearButton->addListener(this);
     addAndMakeVisible(clearButton);
+
+    saveButton = new UtilityButton("Save", Font("Small Text", 13, Font::plain));
+    saveButton->setRadius(3.0f);
+    saveButton->addListener(this);
+    addAndMakeVisible(saveButton);
+
+    loadButton = new UtilityButton("Load", Font("Small Text", 13, Font::plain));
+    loadButton->setRadius(3.0f);
+    loadButton->addListener(this);
+    addAndMakeVisible(loadButton);
 
     newButton = new UtilityButton("New", Font("Small Text", 13, Font::plain));
     newButton->setRadius(3.0f);
