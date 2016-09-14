@@ -38,6 +38,7 @@ TrackerStimulator::TrackerStimulator()
     m_circles = vector<Circle>();
 
     m_stimFreq = vector<float>(m_tot_chan, DEF_FREQ);
+    m_stimSD = vector<float>(m_tot_chan, DEF_SD);
     m_stimElectrode = vector<int>(m_tot_chan, 0);
 
     m_phaseDuration = vector<float>(m_tot_chan, DEF_PHASE_DURATION);
@@ -45,12 +46,12 @@ TrackerStimulator::TrackerStimulator()
     m_repetitions = vector<int>(m_tot_chan, DEF_REPETITIONS);
     m_voltage = vector<float>(m_tot_chan, DEF_VOLTAGE);
     m_interPulseInt = vector<float>(m_tot_chan, DEF_INTER_PULSE);
-    m_trainDuration = vector<float>(m_tot_chan, DEF_INTER_PULSE);
+    m_trainDuration = vector<float>(m_tot_chan, DEF_TRAINDURATION);
 
     m_isUniform = vector<int>(m_tot_chan, 1);
     m_isBiphasic = vector<int>(m_tot_chan, 1);
     m_negativeFirst = vector<int>(m_tot_chan, 1);
-    //int a = 5;
+
 }
 
 TrackerStimulator::~TrackerStimulator()
@@ -126,6 +127,10 @@ float TrackerStimulator::getStimFreq(int chan) const
 {
     return m_stimFreq[chan];
 }
+float TrackerStimulator::getStimSD(int chan) const
+{
+    return m_stimSD[chan];
+}
 int TrackerStimulator::getStimElectrode(int chan) const
 {
     return m_stimElectrode[chan];
@@ -171,6 +176,10 @@ float TrackerStimulator::getInterPulseInt(int chan) const
 {
     return m_interPulseInt[chan];
 }
+float TrackerStimulator::getTrainDuration(int chan) const
+{
+    return m_trainDuration[chan];
+}
 
 uint32_t TrackerStimulator::getPulsePalVersion() const
 {
@@ -180,6 +189,10 @@ uint32_t TrackerStimulator::getPulsePalVersion() const
 void TrackerStimulator::setStimFreq(int chan, float stimFreq)
 {
     m_stimFreq[chan] = stimFreq;
+}
+void TrackerStimulator::setStimSD(int chan, float stimSD)
+{
+    m_stimSD[chan] = stimSD;
 }
 void TrackerStimulator::setStimElectrode(int chan, int stimElectrode)
 {
@@ -232,11 +245,51 @@ void TrackerStimulator::setInterPulseInt(int chan, float interPulseInt)
     m_interPulseInt[chan] = interPulseInt;
     updatePulsePal();
 }
+void TrackerStimulator::setTrainDuration(int chan, float trainDuration)
+{
+    m_trainDuration[chan] = trainDuration;
+    updatePulsePal();
+}
+
 void TrackerStimulator::setChan(int chan)
 {
     m_chan = chan;
 }
 
+bool TrackerStimulator::checkParameterConsistency(int chan)
+{
+    if (m_repetitions[chan] > 1)
+        if (!m_isBiphasic[chan])
+            return !(m_phaseDuration[chan] > m_interPulseInt[chan] || m_interPulseInt[chan] > m_trainDuration[chan]);
+        else
+            return !((2*m_phaseDuration[chan] + m_interPhaseInt[chan]) > m_interPulseInt[chan]
+                     || m_interPulseInt[chan] > m_trainDuration[chan]);
+    else
+        return true;
+}
+
+void TrackerStimulator::setRepetitionsTrainDuration(int chan, priority whatFirst)
+{
+    if (whatFirst == REPFIRST)
+    {
+        if (m_repetitions[chan] > 1)
+            if (!m_isBiphasic[chan])
+                m_trainDuration[chan] = m_interPulseInt[chan]*m_repetitions[chan] + m_phaseDuration[chan];
+            else
+                m_trainDuration[chan] = m_interPulseInt[chan]*m_repetitions[chan] + (2*m_phaseDuration[chan]
+                        + m_interPhaseInt[chan]);
+        else
+            m_trainDuration[chan] = m_phaseDuration[chan];
+    }
+    else
+    {
+        if (!m_isBiphasic[chan])
+            m_repetitions[chan] = int((m_trainDuration[chan]-m_phaseDuration[chan])/m_interPulseInt[chan]);
+        else
+            m_repetitions[chan] = int((m_trainDuration[chan]-(2*m_phaseDuration[chan] + m_interPhaseInt[chan]))
+                                      /m_interPulseInt[chan]);
+    }
+}
 
 void TrackerStimulator::process(AudioSampleBuffer& buffer, MidiBuffer& events)
 {
@@ -256,7 +309,21 @@ void TrackerStimulator::process(AudioSampleBuffer& buffer, MidiBuffer& events)
         if (stim)
         {
             // Check if timePassed >= latency
-            if (m_timePassed >= float(1/m_stimFreq[m_chan]))
+
+            float stim_interval;
+            if (m_isUniform[m_chan]) //uniform
+                stim_interval = float(1/m_stimFreq[m_chan]);
+            else                     //gaussian
+            {
+                int cirlceIn = isPositionWithinCircles(m_x, m_y);
+                float dist = m_circles[cirlceIn].distanceFromCenter(m_x, m_y);
+
+                float freq_gauss = m_stimFreq[m_chan]*std::exp(dist/(2*pow(m_stimSD[m_chan],2)));
+                stim_interval = float(1/freq_gauss);
+            }
+
+
+            if (m_timePassed >= stim_interval )
             {
                 // trigger selected channel
                 m_pulsePal.triggerChannel(m_chan + 1);
@@ -370,8 +437,8 @@ bool TrackerStimulator::updatePulsePal()
 
 		}
 
-		float train_duration = float(m_interPulseInt[m_chan])/1000 * m_repetitions[m_chan] + float(m_phaseDuration[m_chan])/1000;
-		m_pulsePal.setPulseTrainDuration(actual_chan, train_duration);
+        //float train_duration = float(m_interPulseInt[m_chan])/1000 * m_repetitions[m_chan] + float(m_phaseDuration[m_chan])/1000;
+        m_pulsePal.setPulseTrainDuration(actual_chan, m_trainDuration[m_chan]);
 
 		if (m_repetitions[m_chan]>1)
 		{			
@@ -381,10 +448,7 @@ bool TrackerStimulator::updatePulsePal()
 		return true;
 	}
 	else
-	{
-		CoreServices::sendStatusMessage("PulsePal is not connected!");
 		return false;
-	}
 }
 
 bool TrackerStimulator::testStimulation(){
@@ -423,10 +487,10 @@ bool TrackerStimulator::isReady()
 bool TrackerStimulator::saveParametersXml()
 {
     //Save
-    XmlElement* state = new XmlElement("TrackerStimulatorState");
+    XmlElement* state = new XmlElement("TRACKERSTIMULATOR");
 
     // save circles
-    XmlElement* circles = new XmlElement("Circles");
+    XmlElement* circles = new XmlElement("CIRCLES");
     for (int i=0; i<m_circles.size(); i++)
     {
         XmlElement* circ = new XmlElement(String("Circles_")+=String(i));
@@ -439,7 +503,7 @@ bool TrackerStimulator::saveParametersXml()
         circles->addChildElement(circ);
     }
     // save stimulator conf
-    XmlElement* channels = new XmlElement("Channels");
+    XmlElement* channels = new XmlElement("CHANNELS");
     for (int i=0; i<4; i++)
     {
         XmlElement* chan = new XmlElement(String("Chan_")+=String(i+1));
@@ -468,9 +532,79 @@ bool TrackerStimulator::saveParametersXml()
 
 
 }
-bool TrackerStimulator::loadParametersXml()
-{
 
+bool TrackerStimulator::loadParametersXml(File fileToLoad)
+{
+    File currentFile = fileToLoad;
+
+    XmlDocument doc(currentFile);
+    XmlElement* xml = doc.getDocumentElement();
+
+    if (xml == 0 || ! xml->hasTagName("TRACKERSTIMULATOR"))
+    {
+        std::cout << "File not found." << std::endl;
+        delete xml;
+        return false;
+    }
+    else
+    {
+
+        forEachXmlChildElement(*xml, element)
+        {
+            if (element->hasTagName("CIRCLES"))
+            {
+                m_circles.clear();
+                forEachXmlChildElement(*element, element2)
+                {
+                    int id = element2->getIntAttribute("id");
+                    double cx = element2->getDoubleAttribute("xpos");
+                    double cy = element2->getDoubleAttribute("ypos");
+                    double crad = element2->getDoubleAttribute("rad");
+                    bool on = element2->getIntAttribute("on");
+
+                    Circle newCircle = Circle((float) cx, (float) cy, (float) crad, on);
+                    m_circles.push_back(newCircle);
+
+                }
+                break;
+            }
+            if (element->hasTagName("CHANNELS"))
+            {
+
+                forEachXmlChildElement(*element, element2)
+                {
+                    int id = element2->getIntAttribute("id");
+                    double freq = element2->getDoubleAttribute("freq");
+                    int elec = element2->getIntAttribute("elec");
+                    int biphasic = element2->getIntAttribute("biphasic");
+                    int negfirst = element2->getIntAttribute("negative");
+                    double phase = element2->getDoubleAttribute("phase");
+                    double interphase = element2->getDoubleAttribute("interphase");
+                    double voltage = element2->getDoubleAttribute("voltage");
+                    int rep = element2->getIntAttribute("repetitions");
+                    double interpulse = element2->getDoubleAttribute("interpulse");
+                    double trainduration = element2->getDoubleAttribute("trainduration");
+
+                    if (id<4) //pulse pal channels
+                    {
+                        m_stimFreq[id] = freq;
+                        m_stimElectrode[id] = elec;
+                        m_isBiphasic[id] = biphasic;
+                        m_negativeFirst[id] = negfirst;
+                        m_phaseDuration[id] = phase;
+                        m_interPhaseInt[id] = interphase;
+                        m_voltage[id] = voltage;
+                        m_repetitions[id] = rep;
+                        m_interPulseInt[id] = interpulse;
+                        m_trainDuration[id] = trainduration;
+                    }
+
+                }
+                break;
+            }
+        }
+        return true;
+    }
 }
 
 void TrackerStimulator::save()
@@ -493,14 +627,47 @@ void TrackerStimulator::save()
         }
         else
         {
-            //sendActionMessage("No file chosen.");
+            CoreServices::sendStatusMessage("No file chosen!");
         }
 
     }
 }
 
+void TrackerStimulator::saveAs()
+{
+    FileChooser fc("Choose the file name...",
+                   File::getCurrentWorkingDirectory(),
+                   "*.xml");
+
+    if (fc.browseForFileToSave(true))
+    {
+        currentConfigFile = fc.getResult();
+        std::cout << currentConfigFile.getFileName() << std::endl;
+        saveParametersXml();
+    }
+    else
+    {
+        CoreServices::sendStatusMessage("No file chosen!");
+    }
+}
+
 void TrackerStimulator::load()
-{}
+{
+    FileChooser fc("Choose the file name...",
+                   File::getCurrentWorkingDirectory(),
+                   "*.xml");
+
+    if (fc.browseForFileToOpen())
+    {
+        File fileToLoad = fc.getResult();
+        std::cout << currentConfigFile.getFileName() << std::endl;
+        loadParametersXml(fileToLoad);
+    }
+    else
+    {
+        CoreServices::sendStatusMessage("No file chosen!");
+    }
+}
 
 
 // Circle methods
@@ -573,6 +740,10 @@ bool Circle::isPositionIn(float x, float y)
         return true;
     else
         return false;
+}
+
+float Circle::distanceFromCenter(float x, float y){
+    return pow(x - m_cx,2) + pow(y - m_cy,2);
 }
 
 

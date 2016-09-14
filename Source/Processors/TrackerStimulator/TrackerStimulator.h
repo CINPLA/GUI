@@ -9,10 +9,12 @@
 
 #define DEF_PHASE_DURATION 1
 #define DEF_INTER_PHASE 1
-#define DEF_INTER_PULSE 2
+#define DEF_INTER_PULSE 5
 #define DEF_REPETITIONS 1
+#define DEF_TRAINDURATION 10
 #define DEF_VOLTAGE 5
 #define DEF_FREQ 2
+#define DEF_SD 1
 
 #define MAX_CIRCLES 9
 
@@ -36,6 +38,7 @@ public:
     bool off();
 
     bool isPositionIn(float x, float y);
+    float distanceFromCenter(float x, float y);
 
 private:
 
@@ -50,6 +53,9 @@ class TrackerStimulator : public GenericProcessor
 {
 
 public:
+
+    enum priority {REPFIRST, TRAINFIRST};
+
     TrackerStimulator();
     ~TrackerStimulator();
 
@@ -82,6 +88,7 @@ public:
     int getChan() const;
 
     float getStimFreq(int chan) const;
+    float getStimSD(int chan) const;
     int getStimElectrode(int chan) const;
     bool getIsUniform(int chan) const;
 
@@ -92,10 +99,12 @@ public:
     float getVoltage(int chan) const;
     int getRepetitions(int chan) const;
     float getInterPulseInt(int chan) const;
+    float getTrainDuration(int chan) const;
 
     uint32_t getPulsePalVersion() const;
 
     void setStimFreq(int chan, float stimFreq);
+    void setStimSD(int chan, float stimSD);
     void setStimElectrode(int chan, int stimElectrode);
     void setIsUniform(int chan, bool isUniform);
 
@@ -106,7 +115,11 @@ public:
     void setVoltage(int chan, float voltage);
     void setRepetitions(int chan, int rep);
     void setInterPulseInt(int chan, float interPulseInt);
+    void setTrainDuration(int chan, float trainDuration);
     void setChan(int chan);
+
+    bool checkParameterConsistency(int chan);
+    void setRepetitionsTrainDuration(int chan, priority whatFirst);
 
     void clearPositionDisplayedUpdated();
     bool positionDisplayedIsUpdated() const;
@@ -120,9 +133,6 @@ public:
     void save();
     void saveAs();
     void load();
-
-
-
 
 private:
 
@@ -144,16 +154,12 @@ private:
     bool m_positionIsUpdated;
     bool m_positionDisplayedIsUpdated;
 
-    // Target Circle params (extend to vectors)
-//    vector<float> m_cx;
-//    vector<float> m_cy;
-//    vector<float> m_crad;
-
     vector<Circle> m_circles;
     int m_selectedCircle;
 
     // Stimulation params
     vector<float> m_stimFreq;
+    vector<float> m_stimSD;
     vector<int> m_stimElectrode;
     vector<int> m_isUniform;
 
@@ -181,7 +187,9 @@ private:
     bool stimulate();
 
     bool saveParametersXml();
-    bool loadParametersXml();
+    bool loadParametersXml(File loadFile);
+
+
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TrackerStimulator)

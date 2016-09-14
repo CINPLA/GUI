@@ -22,6 +22,7 @@ TrackerStimulatorCanvas::TrackerStimulatorCanvas(TrackerStimulator* trackerStimu
     , m_height(1.0)
     , m_updateCircle(false)
     , m_onoff(false)
+    , m_isDeleting(true)
     , buttonTextColour(Colour(255,255,255))
     , labelColour(Colour(200, 255, 0))
     , labelTextColour(Colour(255, 200, 0))
@@ -63,16 +64,16 @@ void TrackerStimulatorCanvas::paint (Graphics& g)
 {
     if(m_x != m_x || m_y != m_y || m_width != m_width || m_height != m_height)
     { // is it nan?
-//        return;
+        //        return;
         m_x = m_prevx;
         m_y = m_prevy;
     }
 
     // set aspect ratio to cam size
-//    float aC = m_width / m_height;
-//    float aS = getWidth() / getHeight();
-//    int camHeight = (aS > aC) ? getHeight() : getHeight() * (aS / aC);
-//    int camWidth = (aS < aC) ? getWidth() : getWidth() * (aC / aS);
+    //    float aC = m_width / m_height;
+    //    float aS = getWidth() / getHeight();
+    //    int camHeight = (aS > aC) ? getHeight() : getHeight() * (aS / aC);
+    //    int camWidth = (aS < aC) ? getWidth() : getWidth() * (aC / aS);
 
     g.setColour(backgroundColour); // backbackround color
     g.fillRect(0, 0, getWidth(), getHeight());
@@ -85,15 +86,14 @@ void TrackerStimulatorCanvas::paint (Graphics& g)
         g.setColour(labelColour);
     else
         g.setColour(labelBackgroundColour);
-    g.fillEllipse(getWidth() - 0.065*getWidth(), 0.25*getHeight(), 0.03*getWidth(), 0.03*getHeight());
-    //DEBUG
-//    m_updateCircle = false;
+    g.fillEllipse(getWidth() - 0.065*getWidth(), 0.16*getHeight(), 0.03*getWidth(), 0.03*getHeight());
 
     // Check pulse Pal connection
     if (processor->getPulsePalVersion() > 0)
         pulsePalLabel->setText(String("Pulse Pal: ") +=  String("CONNECTED"), dontSendNotification);
     else
         pulsePalLabel->setText(String("Pulse Pal: ") +=  String("NOT CONNECTED"), dontSendNotification);
+
 }
 
 void TrackerStimulatorCanvas::resized()
@@ -103,9 +103,11 @@ void TrackerStimulatorCanvas::resized()
 
     // Express all positions as proportion of height and width
     // Buttons
-    clearButton->setBounds(getWidth() - 0.35*getWidth(), getHeight()-0.1*getHeight(), 0.1*getWidth(),0.05*getHeight());
+
     saveButton->setBounds(getWidth() - 0.35*getWidth(), getHeight()-0.3*getHeight(), 0.1*getWidth(),0.05*getHeight());
+    saveAsButton->setBounds(getWidth() - 0.35*getWidth(), getHeight()-0.25*getHeight(), 0.1*getWidth(),0.05*getHeight());
     loadButton->setBounds(getWidth() - 0.35*getWidth(), getHeight()-0.2*getHeight(), 0.1*getWidth(),0.05*getHeight());
+    clearButton->setBounds(getWidth() - 0.35*getWidth(), getHeight()-0.1*getHeight(), 0.1*getWidth(),0.05*getHeight());
 
     newButton->setBounds(getWidth() - 0.2*getWidth(), 0.05*getHeight(), 0.06*getWidth(),0.04*getHeight());
     editButton->setBounds(getWidth() - 0.14*getWidth(), 0.05*getHeight(), 0.06*getWidth(),0.04*getHeight());
@@ -115,32 +117,38 @@ void TrackerStimulatorCanvas::resized()
 
     for (int i = 0; i<MAX_CIRCLES; i++)
     {
-        circlesButton[i]->setBounds(getWidth() - 0.2*getWidth()+i*(0.18/MAX_CIRCLES)*getWidth(), 0.32*getHeight(),
+        circlesButton[i]->setBounds(getWidth() - 0.2*getWidth()+i*(0.18/MAX_CIRCLES)*getWidth(), 0.25*getHeight(),
                                     (0.18/MAX_CIRCLES)*getWidth(),0.03*getHeight());
-        circlesButton[i]->setVisible(false);
+        if (i<processor->getCircles().size())
+            circlesButton[i]->setVisible(true);
+        else
+            circlesButton[i]->setVisible(false);
     }
 
-    uniformButton->setBounds(getWidth() - 0.2*getWidth(), 0.35*getHeight(), 0.09*getWidth(),0.03*getHeight());
-    gaussianButton->setBounds(getWidth() - 0.2*getWidth() + 0.09*getWidth(), 0.35*getHeight(), 0.09*getWidth(),0.03*getHeight());
+    chan1Button->setBounds(getWidth() - 0.2*getWidth(), 0.32*getHeight(), 0.045*getWidth(),0.05*getHeight());
+    chan2Button->setBounds(getWidth() - 0.2*getWidth() + 0.045*getWidth(), 0.32*getHeight(), 0.045*getWidth(),0.05*getHeight());
+    chan3Button->setBounds(getWidth() - 0.2*getWidth() + 0.09 *getWidth(), 0.32*getHeight(), 0.045*getWidth(),0.05*getHeight());
+    chan4Button->setBounds(getWidth() - 0.2*getWidth() + 0.135*getWidth(), 0.32*getHeight(), 0.045*getWidth(),0.05*getHeight());
 
-    biphasicButton->setBounds(getWidth() - 0.2*getWidth(), 0.55*getHeight(), 0.18*getWidth(),0.03*getHeight());
-    negFirstButton->setBounds(getWidth() - 0.2*getWidth(), 0.6*getHeight(), 0.09*getWidth(),0.03*getHeight());
-    posFirstButton->setBounds(getWidth() - 0.2*getWidth() + 0.09*getWidth(), 0.6*getHeight(), 0.09*getWidth(),0.03*getHeight());
-    chan1Button->setBounds(getWidth() - 0.2*getWidth(), 0.65*getHeight(), 0.045*getWidth(),0.03*getHeight());
-    chan2Button->setBounds(getWidth() - 0.2*getWidth() + 0.045*getWidth(), 0.65*getHeight(), 0.045*getWidth(),0.03*getHeight());
-    chan3Button->setBounds(getWidth() - 0.2*getWidth() + 0.09 *getWidth(), 0.65*getHeight(), 0.045*getWidth(),0.03*getHeight());
-    chan4Button->setBounds(getWidth() - 0.2*getWidth() + 0.135*getWidth(), 0.65*getHeight(), 0.045*getWidth(),0.03*getHeight());
+    uniformButton->setBounds(getWidth() - 0.2*getWidth(), 0.55*getHeight(), 0.09*getWidth(),0.03*getHeight());
+    gaussianButton->setBounds(getWidth() - 0.2*getWidth() + 0.09*getWidth(), 0.55*getHeight(), 0.09*getWidth(),0.03*getHeight());
+
+    biphasicButton->setBounds(getWidth() - 0.2*getWidth(), 0.6*getHeight(), 0.18*getWidth(),0.03*getHeight());
+    negFirstButton->setBounds(getWidth() - 0.2*getWidth(), 0.65*getHeight(), 0.09*getWidth(),0.03*getHeight());
+    posFirstButton->setBounds(getWidth() - 0.2*getWidth() + 0.09*getWidth(), 0.65*getHeight(), 0.09*getWidth(),0.03*getHeight());
 
 
 
     // Static Labels
+    pulsePalLabel->setBounds(getWidth() - 0.4*getWidth(), 0.1*getHeight(), 0.18*getWidth(),0.04*getHeight());
+
     cxLabel->setBounds(getWidth() - 0.2*getWidth(), 0.1*getHeight(), 0.06*getWidth(),0.04*getHeight());
     cyLabel->setBounds(getWidth() - 0.2*getWidth(), 0.15*getHeight(), 0.06*getWidth(),0.04*getHeight());
     cradLabel->setBounds(getWidth() - 0.2*getWidth(), 0.2*getHeight(), 0.06*getWidth(),0.04*getHeight());
 
-    pulsePalLabel->setBounds(getWidth() - 0.2*getWidth(), 0.3*getHeight(), 0.18*getWidth(),0.04*getHeight());
-    fmaxLabel->setBounds(getWidth() - 0.2*getWidth(), 0.4*getHeight(), 0.1*getWidth(),0.04*getHeight());
-    elecLabel->setBounds(getWidth() - 0.2*getWidth(), 0.45*getHeight(), 0.1*getWidth(),0.04*getHeight());
+    fmaxLabel->setBounds(getWidth() - 0.2*getWidth(), 0.39*getHeight(), 0.1*getWidth(),0.04*getHeight());
+    sdevLabel->setBounds(getWidth() - 0.2*getWidth(), 0.44*getHeight(), 0.1*getWidth(),0.04*getHeight());
+    elecLabel->setBounds(getWidth() - 0.2*getWidth(), 0.49*getHeight(), 0.1*getWidth(),0.04*getHeight());
 
     phaseLabel->setBounds(getWidth() - 0.2*getWidth(), 0.7*getHeight(), 0.1*getWidth(),0.04*getHeight());
     interphaseLabel->setBounds(getWidth() - 0.2*getWidth(), 0.75*getHeight(), 0.1*getWidth(),0.04*getHeight());
@@ -155,27 +163,26 @@ void TrackerStimulatorCanvas::resized()
     cyEditLabel->setBounds(getWidth() - 0.14*getWidth(), 0.15*getHeight(), 0.06*getWidth(),0.04*getHeight());
     cradEditLabel->setBounds(getWidth() - 0.14*getWidth(), 0.2*getHeight(), 0.06*getWidth(),0.04*getHeight());
 
-    fmaxEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.4*getHeight(), 0.08*getWidth(),0.04*getHeight());
-    elecEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.45*getHeight(), 0.08*getWidth(),0.04*getHeight());
+    fmaxEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.39*getHeight(), 0.08*getWidth(),0.04*getHeight());
+    sdevEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.44*getHeight(), 0.08*getWidth(),0.04*getHeight());
+    elecEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.49*getHeight(), 0.08*getWidth(),0.04*getHeight());
 
     phaseEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.7*getHeight(), 0.08*getWidth(),0.04*getHeight());
     interphaseEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.75*getHeight(), 0.08*getWidth(),0.04*getHeight());
     voltageEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.8*getHeight(), 0.08*getWidth(),0.04*getHeight());
-    repetitionsEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.85*getHeight(), 0.08*getWidth(),0.04*getHeight());
-    trainDurationEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.9*getHeight(), 0.08*getWidth(),0.04*getHeight());
-    interpulseEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.95*getHeight(), 0.08*getWidth(),0.04*getHeight());
-
+    interpulseEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.85*getHeight(), 0.08*getWidth(),0.04*getHeight());
+    repetitionsEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.9*getHeight(), 0.08*getWidth(),0.04*getHeight());
+    trainDurationEditLabel->setBounds(getWidth() - 0.1*getWidth(), 0.95*getHeight(), 0.08*getWidth(),0.04*getHeight());
 
     refresh();
-
 }
 
 
 bool TrackerStimulatorCanvas::keyPressed(const KeyPress &key, Component *originatingComponent)
 {
     // *** To do add copy/paste of circles
-//    KeyPress ctrlC = KeyPress ('c', ModifierKeys::ctrlModifier);
-//    KeyPress ctrlV = KeyPress ('v', ModifierKeys::ctrlModifier);
+    //    KeyPress ctrlC = KeyPress ('c', ModifierKeys::ctrlModifier);
+    //    KeyPress ctrlV = KeyPress ('v', ModifierKeys::ctrlModifier);
 
     if (key == KeyPress::deleteKey)
         if (areThereCicles())
@@ -193,9 +200,16 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
     {
         processor->save();
     }
+    else if (button == saveAsButton)
+    {
+        processor->saveAs();
+    }
     else if (button == loadButton)
     {
         processor->load();
+
+        // update labels and buttons
+        uploadInfoOnLoad();
     }
     else if (button == newButton)
     {
@@ -205,13 +219,19 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
         Value x = cxEditLabel->getTextValue();
         Value y = cyEditLabel->getTextValue();
         Value rad = cradEditLabel->getTextValue();
-        processor->addCircle(Circle(float(x.getValue()), float(y.getValue()), float(rad.getValue()), m_onoff));
-        processor->setSelectedCircle(processor->getCircles().size()-1);
-        circlesButton[processor->getSelectedCircle()]->setVisible(true);
+        if (processor->getCircles().size() < MAX_CIRCLES)
+        {
+            processor->addCircle(Circle(float(x.getValue()), float(y.getValue()), float(rad.getValue()), m_onoff));
+            processor->setSelectedCircle(processor->getCircles().size()-1);
+            circlesButton[processor->getSelectedCircle()]->setVisible(true);
 
-        // toggle current circle button (untoggles all the others)
-        if (circlesButton[processor->getSelectedCircle()]->getToggleState()==false)
+            // toggle current circle button (untoggles all the others)
+            if (circlesButton[processor->getSelectedCircle()]->getToggleState()==false)
                 circlesButton[processor->getSelectedCircle()]->triggerClick();
+            m_isDeleting = false;
+        }
+        else
+            CoreServices::sendStatusMessage("Max number of circles reached!");
 
 
     }
@@ -262,25 +282,41 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
     {
         if (button->getToggleState()==true){
             if (gaussianButton->getToggleState()==true)
+            {
                 gaussianButton->triggerClick();
+                sdevLabel->setVisible(false);
+                sdevEditLabel->setVisible(false);
+            }
 
             processor->setIsUniform(processor->getChan(), true);
         }
         else
             if (gaussianButton->getToggleState()==false)
+            {
                 gaussianButton->triggerClick();
+                sdevLabel->setVisible(true);
+                sdevEditLabel->setVisible(true);
+            }
     }
     else if (button == gaussianButton)
     {
         if (button->getToggleState()==true){
             if (uniformButton->getToggleState()==true)
+            {
                 uniformButton->triggerClick();
+                sdevLabel->setVisible(true);
+                sdevEditLabel->setVisible(true);
+            }
 
             processor->setIsUniform(processor->getChan(), false);
         }
         else
             if (uniformButton->getToggleState()==false)
+            {
                 uniformButton->triggerClick();
+                sdevLabel->setVisible(false);
+                sdevEditLabel->setVisible(false);
+            }
 
     }
     else if (button == biphasicButton)
@@ -289,6 +325,10 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
             processor->setIsBiphasic(processor->getChan(), true);
         else
             processor->setIsBiphasic(processor->getChan(), false);
+
+        // update train duration/repetition
+        processor->setRepetitionsTrainDuration(processor->getChan(), processor->REPFIRST);
+        uploadInfoOnLoad();
     }
     else if (button == negFirstButton)
     {
@@ -328,6 +368,7 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
 
             // retrieve and set label values
             fmaxEditLabel->setText(String(processor->getStimFreq(0)), dontSendNotification);
+            sdevEditLabel->setText(String(processor->getStimSD(0)), dontSendNotification);
             elecEditLabel->setText(String(processor->getStimElectrode(0)), dontSendNotification);
             phaseEditLabel->setText(String(processor->getPhaseDuration(0)), dontSendNotification);
             interphaseEditLabel->setText(String(processor->getInterPhaseInt(0)), dontSendNotification);
@@ -381,6 +422,7 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
 
             // retrieve and set label values
             fmaxEditLabel->setText(String(processor->getStimFreq(1)), dontSendNotification);
+            sdevEditLabel->setText(String(processor->getStimSD(1)), dontSendNotification);
             elecEditLabel->setText(String(processor->getStimElectrode(1)), dontSendNotification);
             phaseEditLabel->setText(String(processor->getPhaseDuration(1)), dontSendNotification);
             interphaseEditLabel->setText(String(processor->getInterPhaseInt(1)), dontSendNotification);
@@ -435,6 +477,7 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
 
             // retrieve and set label values
             fmaxEditLabel->setText(String(processor->getStimFreq(2)), dontSendNotification);
+            sdevEditLabel->setText(String(processor->getStimSD(2)), dontSendNotification);
             elecEditLabel->setText(String(processor->getStimElectrode(2)), dontSendNotification);
             phaseEditLabel->setText(String(processor->getPhaseDuration(2)), dontSendNotification);
             interphaseEditLabel->setText(String(processor->getInterPhaseInt(2)), dontSendNotification);
@@ -487,6 +530,7 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
 
             // retrieve and set label values
             fmaxEditLabel->setText(String(processor->getStimFreq(3)), dontSendNotification);
+            sdevEditLabel->setText(String(processor->getStimSD(3)), dontSendNotification);
             elecEditLabel->setText(String(processor->getStimElectrode(3)), dontSendNotification);
             phaseEditLabel->setText(String(processor->getPhaseDuration(3)), dontSendNotification);
             interphaseEditLabel->setText(String(processor->getInterPhaseInt(3)), dontSendNotification);
@@ -569,8 +613,151 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
 
         }
     }
-	processor->updatePulsePal();
+    processor->updatePulsePal();
     repaint();
+
+}
+
+void TrackerStimulatorCanvas::uploadInfoOnLoad()
+{
+    // circle buttons visible
+    for (int i = 0; i<MAX_CIRCLES; i++)
+    {
+        if (i<processor->getCircles().size())
+            circlesButton[i]->setVisible(true);
+        else
+            circlesButton[i]->setVisible(false);
+    }
+    // update labels and buttons
+    if (chan1Button->getToggleState())
+    {
+        fmaxEditLabel->setText(String(processor->getStimFreq(0)), dontSendNotification);
+        elecEditLabel->setText(String(processor->getStimElectrode(0)), dontSendNotification);
+        phaseEditLabel->setText(String(processor->getPhaseDuration(0)), dontSendNotification);
+        interphaseEditLabel->setText(String(processor->getInterPhaseInt(0)), dontSendNotification);
+        voltageEditLabel->setText(String(processor->getVoltage(0)), dontSendNotification);
+        interpulseEditLabel->setText(String(processor->getInterPulseInt(0)), dontSendNotification);
+        repetitionsEditLabel->setText(String(processor->getRepetitions(0)), dontSendNotification);
+        trainDurationEditLabel->setText(String(processor->getTrainDuration(0)), dontSendNotification);
+
+        if (processor->getIsBiphasic(0))
+        {
+            if (!biphasicButton->getToggleState())
+                biphasicButton->triggerClick();
+        }
+        else
+        {
+            if (biphasicButton->getToggleState())
+                biphasicButton->triggerClick();
+        }
+        if (processor->getNegFirst(0))
+        {
+            if (!negFirstButton->getToggleState())
+                negFirstButton->triggerClick();
+        }
+        else
+        {
+            if (negFirstButton->getToggleState())
+                negFirstButton->triggerClick();
+        }
+    }
+    else if (chan2Button->getToggleState())
+    {
+        fmaxEditLabel->setText(String(processor->getStimFreq(1)), dontSendNotification);
+        elecEditLabel->setText(String(processor->getStimElectrode(1)), dontSendNotification);
+        phaseEditLabel->setText(String(processor->getPhaseDuration(1)), dontSendNotification);
+        interphaseEditLabel->setText(String(processor->getInterPhaseInt(1)), dontSendNotification);
+        voltageEditLabel->setText(String(processor->getVoltage(1)), dontSendNotification);
+        interpulseEditLabel->setText(String(processor->getInterPulseInt(1)), dontSendNotification);
+        repetitionsEditLabel->setText(String(processor->getRepetitions(1)), dontSendNotification);
+        trainDurationEditLabel->setText(String(processor->getTrainDuration(1)), dontSendNotification);
+
+        if (processor->getIsBiphasic(1))
+        {
+            if (!biphasicButton->getToggleState())
+                biphasicButton->triggerClick();
+        }
+        else
+        {
+            if (biphasicButton->getToggleState())
+                biphasicButton->triggerClick();
+        }
+        if (processor->getNegFirst(1))
+        {
+            if (!negFirstButton->getToggleState())
+                negFirstButton->triggerClick();
+        }
+        else
+        {
+            if (negFirstButton->getToggleState())
+                negFirstButton->triggerClick();
+        }
+    }
+    else if (chan3Button->getToggleState())
+    {
+        fmaxEditLabel->setText(String(processor->getStimFreq(2)), dontSendNotification);
+        elecEditLabel->setText(String(processor->getStimElectrode(2)), dontSendNotification);
+        phaseEditLabel->setText(String(processor->getPhaseDuration(2)), dontSendNotification);
+        interphaseEditLabel->setText(String(processor->getInterPhaseInt(2)), dontSendNotification);
+        voltageEditLabel->setText(String(processor->getVoltage(2)), dontSendNotification);
+        interpulseEditLabel->setText(String(processor->getInterPulseInt(2)), dontSendNotification);
+        repetitionsEditLabel->setText(String(processor->getRepetitions(2)), dontSendNotification);
+        trainDurationEditLabel->setText(String(processor->getTrainDuration(2)), dontSendNotification);
+
+        if (processor->getIsBiphasic(2))
+        {
+            if (!biphasicButton->getToggleState())
+                biphasicButton->triggerClick();
+        }
+        else
+        {
+            if (biphasicButton->getToggleState())
+                biphasicButton->triggerClick();
+        }
+        if (processor->getNegFirst(2))
+        {
+            if (!negFirstButton->getToggleState())
+                negFirstButton->triggerClick();
+        }
+        else
+        {
+            if (negFirstButton->getToggleState())
+                negFirstButton->triggerClick();
+        }
+    }
+    else if (chan4Button->getToggleState())
+    {
+        fmaxEditLabel->setText(String(processor->getStimFreq(3)), dontSendNotification);
+        elecEditLabel->setText(String(processor->getStimElectrode(3)), dontSendNotification);
+        phaseEditLabel->setText(String(processor->getPhaseDuration(3)), dontSendNotification);
+        interphaseEditLabel->setText(String(processor->getInterPhaseInt(3)), dontSendNotification);
+        voltageEditLabel->setText(String(processor->getVoltage(3)), dontSendNotification);
+        interpulseEditLabel->setText(String(processor->getInterPulseInt(3)), dontSendNotification);
+        repetitionsEditLabel->setText(String(processor->getRepetitions(3)), dontSendNotification);
+        trainDurationEditLabel->setText(String(processor->getTrainDuration(3)), dontSendNotification);
+
+        if (processor->getIsBiphasic(3))
+        {
+            if (!biphasicButton->getToggleState())
+                biphasicButton->triggerClick();
+        }
+        else
+        {
+            if (biphasicButton->getToggleState())
+                biphasicButton->triggerClick();
+        }
+        if (processor->getNegFirst(3))
+        {
+            if (!negFirstButton->getToggleState())
+                negFirstButton->triggerClick();
+        }
+        else
+        {
+            if (negFirstButton->getToggleState())
+                negFirstButton->triggerClick();
+        }
+    }
+
 
 }
 
@@ -615,6 +802,17 @@ void TrackerStimulatorCanvas::labelTextChanged(Label *label)
             label->setText("", dontSendNotification);
         }
     }
+    if (label == sdevEditLabel)
+    {
+        Value val = label->getTextValue();
+        if ((float(val.getValue())>0 && float(val.getValue())<=10000))
+            processor->setStimSD(processor->getChan(), float(val.getValue()));
+        else
+        {
+            CoreServices::sendStatusMessage("Selected values cannot be negative!");
+            label->setText("", dontSendNotification);
+        }
+    }
     if (label == elecEditLabel)
     {
         Value val = label->getTextValue();
@@ -635,6 +833,12 @@ void TrackerStimulatorCanvas::labelTextChanged(Label *label)
         {
             processor->setPhaseDuration(processor->getChan(), value);
             label->setText(String(value), dontSendNotification);
+            if (!processor->checkParameterConsistency(processor->getChan()))
+            {
+                CoreServices::sendStatusMessage("Inconsistent Values!");
+                processor->setPhaseDuration(processor->getChan(), DEF_INTER_PHASE);
+                label->setText("", dontSendNotification);
+            }
         }
         else
         {
@@ -651,6 +855,12 @@ void TrackerStimulatorCanvas::labelTextChanged(Label *label)
         {
             processor->setInterPhaseInt(processor->getChan(), value);
             label->setText(String(value), dontSendNotification);
+            if (!processor->checkParameterConsistency(processor->getChan()))
+            {
+                CoreServices::sendStatusMessage("Inconsistent Values!");
+                processor->setInterPhaseInt(processor->getChan(), DEF_INTER_PHASE);
+                label->setText("", dontSendNotification);
+            }
         }
         else
         {
@@ -663,7 +873,7 @@ void TrackerStimulatorCanvas::labelTextChanged(Label *label)
         Value val = label->getTextValue();
         if (float(val.getValue())>=0 && float(val.getValue())<=10)
         {
-//            float value = float(int(float(val.getValue())*100) / 5 * 5)/100; //only multiple of 100us
+            //            float value = float(int(float(val.getValue())*100) / 5 * 5)/100; //only multiple of 100us
             processor->setVoltage(processor->getChan(), float(val.getValue()));
         }
         else
@@ -676,7 +886,17 @@ void TrackerStimulatorCanvas::labelTextChanged(Label *label)
     {
         Value val = label->getTextValue();
         if (int(val.getValue())>=1)
+        {
             processor->setRepetitions(processor->getChan(), int(val.getValue()));
+            processor->setRepetitionsTrainDuration(processor->getChan(), processor->REPFIRST);
+            trainDurationEditLabel->setText(String(processor->getTrainDuration(processor->getChan())), dontSendNotification);
+            if (!processor->checkParameterConsistency(processor->getChan()))
+            {
+                CoreServices::sendStatusMessage("Inconsistent Values!");
+                processor->setRepetitions(processor->getChan(), DEF_REPETITIONS);
+                label->setText("", dontSendNotification);
+            }
+        }
         else
         {
             CoreServices::sendStatusMessage("Selected values cannot be less than 1!");
@@ -689,9 +909,16 @@ void TrackerStimulatorCanvas::labelTextChanged(Label *label)
         float value = float(my_round(float(val.getValue())*10) / 10); //only multiple of 100us
         if ((float(val.getValue())>=0 && int(val.getValue())<=3600*10e3))
         {
-            int chan = processor->getChan();
-            processor->setInterPulseInt(chan, value);
+            processor->setInterPulseInt(processor->getChan(), value);
             label->setText(String(value), dontSendNotification);
+            processor->setRepetitionsTrainDuration(processor->getChan(), processor->REPFIRST);
+            trainDurationEditLabel->setText(String(processor->getTrainDuration(processor->getChan())), dontSendNotification);
+            if (!processor->checkParameterConsistency(processor->getChan()))
+            {
+                CoreServices::sendStatusMessage("Inconsistent Values!");
+                processor->setInterPulseInt(processor->getChan(), DEF_INTER_PULSE);
+                label->setText("", dontSendNotification);
+            }
         }
         else
         {
@@ -699,8 +926,31 @@ void TrackerStimulatorCanvas::labelTextChanged(Label *label)
             label->setText("", dontSendNotification);
         }
     }
+    if (label == trainDurationEditLabel)
+    {
+        Value val = label->getTextValue();
+        float value = float(my_round(float(val.getValue())*10) / 10); //only multiple of 100us
+        if (int(val.getValue())>=1)
+        {
+            processor->setTrainDuration(processor->getChan(), value);
+            label->setText(String(value), dontSendNotification);
+            processor->setRepetitionsTrainDuration(processor->getChan(), processor->TRAINFIRST);
+            repetitionsEditLabel->setText(String(processor->getRepetitions(processor->getChan())), dontSendNotification);
+            if (!processor->checkParameterConsistency(processor->getChan()))
+            {
+                CoreServices::sendStatusMessage("Inconsistent Values!");
+                processor->setTrainDuration(processor->getChan(), DEF_TRAINDURATION);
+                label->setText("", dontSendNotification);
+            }
+        }
+        else
+        {
+            CoreServices::sendStatusMessage("Selected values cannot be less than 1!");
+            label->setText("", dontSendNotification);
+        }
+    }
 
-	processor->updatePulsePal();
+    processor->updatePulsePal();
 }
 
 
@@ -749,6 +999,11 @@ void TrackerStimulatorCanvas::initButtons()
     saveButton->addListener(this);
     addAndMakeVisible(saveButton);
 
+    saveAsButton = new UtilityButton("Save As", Font("Small Text", 13, Font::plain));
+    saveAsButton->setRadius(3.0f);
+    saveAsButton->addListener(this);
+    addAndMakeVisible(saveAsButton);
+
     loadButton = new UtilityButton("Load", Font("Small Text", 13, Font::plain));
     loadButton->setRadius(3.0f);
     loadButton->addListener(this);
@@ -762,7 +1017,7 @@ void TrackerStimulatorCanvas::initButtons()
     editButton = new UtilityButton("Edit", Font("Small Text", 13, Font::plain));
     editButton->setRadius(3.0f);
     editButton->addListener(this);
-//    editButton->setColour(TextButton::buttonColourId, Colour(255, 255, 255));
+    //    editButton->setColour(TextButton::buttonColourId, Colour(255, 255, 255));
     addAndMakeVisible(editButton);
 
     delButton = new UtilityButton("Del", Font("Small Text", 13, Font::plain));
@@ -876,6 +1131,13 @@ void TrackerStimulatorCanvas::initLabels()
     fmaxLabel->setColour(Label::textColourId, labelColour);
     addAndMakeVisible(fmaxLabel);
 
+    sdevLabel = new Label("s_sdev", "sd [Hz]:");
+    sdevLabel->setFont(Font(20));
+    sdevLabel->setColour(Label::textColourId, labelColour);
+    addAndMakeVisible(sdevLabel);
+    sdevLabel->setVisible(false);
+
+
     elecLabel = new Label("s_elec", "# electrode:");
     elecLabel->setFont(Font(20));
     elecLabel->setColour(Label::textColourId, labelColour);
@@ -958,6 +1220,15 @@ void TrackerStimulatorCanvas::initLabels()
     fmaxEditLabel->addListener(this);
     addAndMakeVisible(fmaxEditLabel);
 
+    sdevEditLabel = new Label("sdev", String(DEF_FREQ));
+    sdevEditLabel->setFont(Font(20));
+    sdevEditLabel->setColour(Label::textColourId, labelTextColour);
+    sdevEditLabel->setColour(Label::backgroundColourId, labelBackgroundColour);
+    sdevEditLabel->setEditable(true);
+    sdevEditLabel->addListener(this);
+    addAndMakeVisible(sdevEditLabel);
+    sdevEditLabel->setVisible(false);
+
     phaseEditLabel = new Label("phase", String(DEF_PHASE_DURATION));
     phaseEditLabel->setFont(Font(15));
     phaseEditLabel->setColour(Label::textColourId, labelTextColour);
@@ -990,7 +1261,7 @@ void TrackerStimulatorCanvas::initLabels()
     repetitionsEditLabel->addListener(this);
     addAndMakeVisible(repetitionsEditLabel);
 
-    trainDurationEditLabel = new Label("trainDuration", String(DEF_INTER_PULSE));
+    trainDurationEditLabel = new Label("trainDuration", String(DEF_TRAINDURATION));
     trainDurationEditLabel->setFont(Font(15));
     trainDurationEditLabel->setColour(Label::textColourId, labelTextColour);
     trainDurationEditLabel->setColour(Label::backgroundColourId, labelBackgroundColour);
@@ -1053,6 +1324,7 @@ DisplayAxes::DisplayAxes(TrackerStimulator* trackerStimulator, TrackerStimulator
     , m_creatingNewCircle(false)
     , m_movingCircle(false)
     , m_mayBeMoving(false)
+    , m_doubleClick(false)
     , m_firstPaint(true)
 
 {
@@ -1077,6 +1349,7 @@ void DisplayAxes::paint(Graphics& g){
     g.setColour(backgroundColour); //background color
     g.fillAll();
 
+
     if (canvas->getUpdateCircle())
     {
 
@@ -1087,21 +1360,21 @@ void DisplayAxes::paint(Graphics& g){
             if (processor->getCircles()[i].getOn())
             {
                 float cur_x, cur_y, cur_rad;
-                int x, y, radx, rady;
+                int x_c, y_c, x, y, radx, rady;
 
                 cur_x = processor->getCircles()[i].getX();
                 cur_y = processor->getCircles()[i].getY();
                 cur_rad = processor->getCircles()[i].getRad();
 
 
-                x = int(cur_x * getWidth() + xlims[0]);
-                y = int(cur_y * getHeight() + ylims[0]);
+                x_c = int(cur_x * getWidth() + xlims[0]);
+                y_c = int(cur_y * getHeight() + ylims[0]);
 
                 radx = int(cur_rad * getWidth());
                 rady = int(cur_rad * getHeight());
                 // center ellipse
-                x -= radx;
-                y -= rady;
+                x = x_c - radx;
+                y = y_c - rady;
 
 
                 if (i==processor->getSelectedCircle())
@@ -1109,26 +1382,39 @@ void DisplayAxes::paint(Graphics& g){
                     // if circle is being moved or changed size, don't draw static circle
                     if (!(m_movingCircle || m_doubleClick))
                     {
-                        g.setColour(selectedCircleColour);
+                        if (processor->getIsUniform(processor->getChan()))
+                            g.setColour(selectedCircleColour);
+                        else
+                        {
+                            ColourGradient Cgrad = ColourGradient(Colours::red, double(x_c), double(y_c),
+                                                                  Colours::yellow, double(x_c+radx), double(y_c+rady), true);
+                            g.setGradientFill(Cgrad);
+                        }
                         g.fillEllipse(x, y, 2*radx, 2*rady);
                     }
                 }
                 else
                 {
-                    g.setColour(unselectedCircleColour);
+                    if (processor->getIsUniform(processor->getChan()))
+                        g.setColour(unselectedCircleColour);
+                    else
+                    {
+                        ColourGradient Cgrad = ColourGradient(Colours::orange, double(x_c), double(y_c),
+                                                              Colours::lightgoldenrodyellow, double(x_c+radx), double(y_c+rady), true);
+                        g.setGradientFill(Cgrad);
+                    }
                     g.fillEllipse(x, y, 2*radx, 2*rady);
                 }
             }
         }
 
-//        canvas->setUpdateCircle(false);
     }
 
-    float pos_x = processor->getX();
-    float pos_y = processor->getY();
 
     // Draw a point for the current position
     // If inside circle display in RED
+    float pos_x = processor->getX();
+    float pos_y = processor->getY();
 
     if ((pos_x >= 0 && pos_x <= 1) && (pos_y >= 0 && pos_y <= 1))
     {
@@ -1148,20 +1434,28 @@ void DisplayAxes::paint(Graphics& g){
     }
 
 
+    // Draw moving, creating or resizing circle
     if (m_creatingNewCircle || m_movingCircle || m_doubleClick)
     {
         // draw circle increasing in size
-        int x, y, radx, rady;
+        int x_c, y_c, x, y, radx, rady;
 
-        x = int(m_newX * getWidth() + xlims[0]);
-        y = int(m_newY * getHeight() + ylims[0]);
+        x_c = int(m_newX * getWidth() + xlims[0]);
+        y_c = int(m_newY * getHeight() + ylims[0]);
         radx = int(m_tempRad * getWidth());
         rady = int(m_tempRad * getHeight());
         // center ellipse
-        x -= radx;
-        y -= rady;
+        x = x_c - radx;
+        y = y_c - rady;
 
-        g.setColour(unselectedCircleColour);
+        if (processor->getIsUniform(processor->getChan()))
+            g.setColour(unselectedCircleColour);
+        else
+        {
+            ColourGradient Cgrad = ColourGradient(Colours::red, double(x_c), double(y_c),
+                                                  Colours::yellow, double(x_c+radx), double(y_c+rady), true);
+            g.setGradientFill(Cgrad);
+        }
         g.fillEllipse(x, y, 2*radx, 2*rady);
 
     }
@@ -1174,14 +1468,14 @@ void DisplayAxes::mouseMove(const MouseEvent& event){
     {
         // compute m_tempRad
         m_tempRad = sqrt((pow(float(event.x)/float(getWidth())-m_newX, 2) +
-                        pow(float(event.y)/float(getHeight())-m_newY, 2)));
+                          pow(float(event.y)/float(getHeight())-m_newY, 2)));
         repaint();
     }
     if (m_doubleClick)
     {
         // compute m_tempRad
         m_tempRad = sqrt((pow(float(event.x)/float(getWidth())-m_newX, 2) +
-                        pow(float(event.y)/float(getHeight())-m_newY, 2)));
+                          pow(float(event.y)/float(getHeight())-m_newY, 2)));
         if (canvas->areThereCicles())
         {
             m_newX = processor->getCircles()[processor->getSelectedCircle()].getX();
@@ -1200,6 +1494,7 @@ void DisplayAxes::mouseExit(const MouseEvent& event){
     m_movingCircle = false;
     m_creatingNewCircle = false;
     m_mayBeMoving = false;
+    m_doubleClick = false;
 }
 
 void DisplayAxes::mouseDown(const MouseEvent& event)
@@ -1213,14 +1508,19 @@ void DisplayAxes::mouseDown(const MouseEvent& event)
                                                           float(event.y)/float(getHeight()));
         if (m_doubleClick)
         {
-            m_newRad = sqrt((pow(float(event.x)/float(getWidth())-m_newX, 2) +
-                            pow(float(event.y)/float(getHeight())-m_newY, 2)));
-            canvas->cradEditLabel->setText(String(m_newRad), dontSendNotification);
-
-            // Add new circle
-            canvas->setOnButton();
-            canvas->editButton->triggerClick();
             m_doubleClick = false;
+            m_newRad = sqrt((pow(float(event.x)/float(getWidth())-m_newX, 2) +
+                             pow(float(event.y)/float(getHeight())-m_newY, 2)));
+
+            if (m_newRad > 0.005)
+            {
+                canvas->cradEditLabel->setText(String(m_newRad), dontSendNotification);
+
+                // Add new circle
+                canvas->setOnButton();
+                canvas->editButton->triggerClick();
+            }
+
         }
         // If on a circle -> select circle!
         else if (circleIn != -1)
@@ -1244,14 +1544,18 @@ void DisplayAxes::mouseDown(const MouseEvent& event)
         else if (m_creatingNewCircle)
         {
             m_creatingNewCircle = false;
-            m_newRad = sqrt((pow(float(event.x)/float(getWidth())-m_newX, 2) +
-                            pow(float(event.y)/float(getHeight())-m_newY, 2)));
-            canvas->cradEditLabel->setText(String(m_newRad), dontSendNotification);
             setMouseCursor(MouseCursor::CrosshairCursor);
 
-            // Add new circle
-            canvas->setOnButton();
-            canvas->newButton->triggerClick();
+            m_newRad = sqrt((pow(float(event.x)/float(getWidth())-m_newX, 2) +
+                             pow(float(event.y)/float(getHeight())-m_newY, 2)));
+
+            if (m_newRad > 0.005)
+            {
+                canvas->cradEditLabel->setText(String(m_newRad), dontSendNotification);
+                // Add new circle
+                canvas->setOnButton();
+                canvas->newButton->triggerClick();
+            }
 
         }
         else  // Else -> create new circle (set center and drag radius)
@@ -1277,6 +1581,7 @@ void DisplayAxes::mouseUp(const MouseEvent& event){
 
         canvas->editButton->triggerClick();
         m_movingCircle = false;
+        m_doubleClick = false;
     }
 }
 
@@ -1292,7 +1597,7 @@ void DisplayAxes::mouseDrag(const MouseEvent& event){
             cy = processor->getCircles()[processor->getSelectedCircle()].getY();
         }
         m_tempRad = sqrt((pow(float(event.x)/float(getWidth())-cx, 2) +
-                        pow(float(event.y)/float(getHeight())-cy, 2)));
+                          pow(float(event.y)/float(getHeight())-cy, 2)));
 
         if (m_tempRad > 0.02)
         {

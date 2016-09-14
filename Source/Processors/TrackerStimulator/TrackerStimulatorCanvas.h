@@ -47,10 +47,12 @@ public:
     bool areThereCicles();
     void setOnButton();
     float my_round(float x);
+    void uploadInfoOnLoad();
 
     // *** Maybe adjust with proper accessors instead of keep public *** //
     ScopedPointer<UtilityButton> clearButton;
     ScopedPointer<UtilityButton> saveButton;
+    ScopedPointer<UtilityButton> saveAsButton;
     ScopedPointer<UtilityButton> loadButton;
     ScopedPointer<UtilityButton> newButton;
     ScopedPointer<UtilityButton> editButton;
@@ -74,9 +76,9 @@ public:
     ScopedPointer<Label> cradLabel;
     ScopedPointer<Label> onLabel;
     ScopedPointer<Label> fmaxLabel;
+    ScopedPointer<Label> sdevLabel;
     ScopedPointer<Label> elecLabel;
     ScopedPointer<Label> pulsePalLabel;
-    ScopedPointer<Label> pulsePalStatusLabel;
     ScopedPointer<Label> phaseLabel;
     ScopedPointer<Label> interphaseLabel;
     ScopedPointer<Label> voltageLabel;
@@ -90,6 +92,7 @@ public:
     ScopedPointer<Label> cyEditLabel;
     ScopedPointer<Label> cradEditLabel;
     ScopedPointer<Label> fmaxEditLabel;
+    ScopedPointer<Label> sdevEditLabel;
     ScopedPointer<Label> elecEditLabel;
     ScopedPointer<Label> phaseEditLabel;
     ScopedPointer<Label> interphaseEditLabel;
@@ -114,6 +117,7 @@ private:
 
     bool m_onoff;
     bool m_updateCircle;
+    bool m_isDeleting;
 
     Colour buttonTextColour;
     Colour labelColour;
