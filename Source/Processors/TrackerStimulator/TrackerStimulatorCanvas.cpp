@@ -180,13 +180,19 @@ void TrackerStimulatorCanvas::resized()
 
 bool TrackerStimulatorCanvas::keyPressed(const KeyPress &key, Component *originatingComponent)
 {
-    // *** To do add copy/paste of circles
-    //    KeyPress ctrlC = KeyPress ('c', ModifierKeys::ctrlModifier);
-    //    KeyPress ctrlV = KeyPress ('v', ModifierKeys::ctrlModifier);
+    //copy/paste of circles
+    KeyPress ctrlC = KeyPress (99, ModifierKeys::ctrlModifier, (juce_wchar) 'c');
+    KeyPress ctrlV = KeyPress (118, ModifierKeys::ctrlModifier, (juce_wchar) 'v');
 
-    if (key == KeyPress::deleteKey)
+    if (key.getKeyCode() == key.deleteKey)
         if (areThereCicles())
             delButton->triggerClick();
+    if (key.getKeyCode() == ctrlC.getKeyCode() && key.getModifiers() == ctrlC.getModifiers())
+        if (areThereCicles())
+            m_ax->copy();
+    if (key.getKeyCode() == ctrlV.getKeyCode() && key.getModifiers() == ctrlV.getModifiers())
+        if (areThereCicles())
+            m_ax->paste();
     return false;
 }
 
@@ -1326,6 +1332,7 @@ DisplayAxes::DisplayAxes(TrackerStimulator* trackerStimulator, TrackerStimulator
     , m_mayBeMoving(false)
     , m_doubleClick(false)
     , m_firstPaint(true)
+    , m_copy (false)
 
 {
     // *** Add: 1) delete circle with delete button / copy / paste
@@ -1434,8 +1441,8 @@ void DisplayAxes::paint(Graphics& g){
     }
 
 
-    // Draw moving, creating or resizing circle
-    if (m_creatingNewCircle || m_movingCircle || m_doubleClick)
+    // Draw moving, creating, copying or resizing circle
+    if (m_creatingNewCircle || m_movingCircle || m_doubleClick || m_copy)
     {
         // draw circle increasing in size
         int x_c, y_c, x, y, radx, rady;
@@ -1481,6 +1488,16 @@ void DisplayAxes::mouseMove(const MouseEvent& event){
             m_newX = processor->getCircles()[processor->getSelectedCircle()].getX();
             m_newY = processor->getCircles()[processor->getSelectedCircle()].getY();
         }
+        repaint();
+    }
+    if (m_copy)
+    {
+        m_newX = float(event.x)/float(getWidth());
+        m_newY = float(event.y)/float(getHeight());
+
+        // Check boundaries
+        if (!(m_newX <= 1 && m_newX >= 0) || !(m_newY <= 1 && m_newY >= 0))
+            m_copy = false;
         repaint();
     }
 
@@ -1620,8 +1637,23 @@ void DisplayAxes::mouseDrag(const MouseEvent& event){
     }
 }
 
+void DisplayAxes::copy()
+{
+    m_copy = true;
+    if (canvas->areThereCicles())
+        m_tempRad = processor->getCircles()[processor->getSelectedCircle()].getRad();
+}
 
+void DisplayAxes::paste()
+{
+    m_copy = false;
+    canvas->cxEditLabel->setText(String(m_newX), dontSendNotification);
+    canvas->cyEditLabel->setText(String(m_newY), dontSendNotification);
+    // Add new circle
+    canvas->setOnButton();
+    canvas->newButton->triggerClick();
 
+}
 
 
 

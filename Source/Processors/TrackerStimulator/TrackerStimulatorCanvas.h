@@ -157,6 +157,9 @@ public:
     void mouseUp(const MouseEvent& event);
     void mouseDrag(const MouseEvent& event);
 
+    void copy();
+    void paste();
+
 
 private:
 
@@ -180,6 +183,7 @@ private:
     bool m_mayBeMoving;
     bool m_movingCircle;
     bool m_doubleClick;
+    bool m_copy;
 
     float m_newX;
     float m_newY;
