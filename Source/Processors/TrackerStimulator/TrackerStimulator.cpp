@@ -323,7 +323,7 @@ void TrackerStimulator::process(AudioSampleBuffer& buffer, MidiBuffer& events)
             }
 
 
-            if (m_timePassed >= stim_interval )
+            if (m_timePassed >= stim_interval)
             {
                 // trigger selected channel
                 m_pulsePal.triggerChannel(m_chan + 1);
@@ -357,6 +357,7 @@ void TrackerStimulator::handleEvent(int eventType, MidiMessage &event, int sampl
 		{
 			m_width = message[2];
 			m_height = message[3];
+            m_aspect_ratio = m_width / m_height;
 		}
         m_positionIsUpdated = true;
     }

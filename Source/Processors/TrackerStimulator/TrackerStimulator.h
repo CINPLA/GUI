@@ -14,7 +14,7 @@
 #define DEF_TRAINDURATION 10
 #define DEF_VOLTAGE 5
 #define DEF_FREQ 2
-#define DEF_SD 1
+#define DEF_SD 0.1
 
 #define MAX_CIRCLES 9
 
@@ -151,6 +151,7 @@ private:
     float m_y;
     float m_width;
     float m_height;
+    float m_aspect_ratio;
     bool m_positionIsUpdated;
     bool m_positionDisplayedIsUpdated;
 
