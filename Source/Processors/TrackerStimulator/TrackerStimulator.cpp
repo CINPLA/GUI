@@ -265,7 +265,19 @@ bool TrackerStimulator::checkParameterConsistency(int chan)
             return !((2*m_phaseDuration[chan] + m_interPhaseInt[chan]) > m_interPulseInt[chan]
                      || m_interPulseInt[chan] > m_trainDuration[chan]);
     else
+    {
+        if (!m_isBiphasic[chan])
+        {
+            m_interPulseInt[chan] = m_phaseDuration[chan];
+            m_trainDuration[chan] = m_phaseDuration[chan];
+        }
+        else
+        {
+            m_interPulseInt[chan] = 2*m_phaseDuration[chan] + m_interPhaseInt[chan];
+            m_trainDuration[chan] = 2*m_phaseDuration[chan] + m_interPhaseInt[chan];
+        }
         return true;
+    }
 }
 
 void TrackerStimulator::setRepetitionsTrainDuration(int chan, priority whatFirst)
@@ -278,16 +290,27 @@ void TrackerStimulator::setRepetitionsTrainDuration(int chan, priority whatFirst
             else
                 m_trainDuration[chan] = m_interPulseInt[chan]*m_repetitions[chan] + (2*m_phaseDuration[chan]
                         + m_interPhaseInt[chan]);
-        else
-            m_trainDuration[chan] = m_phaseDuration[chan];
     }
     else
     {
         if (!m_isBiphasic[chan])
-            m_repetitions[chan] = int((m_trainDuration[chan]-m_phaseDuration[chan])/m_interPulseInt[chan]);
+            if (int((m_trainDuration[chan]-m_phaseDuration[chan])/m_interPulseInt[chan]) >= 1)
+                m_repetitions[chan] = int((m_trainDuration[chan]-m_phaseDuration[chan])/m_interPulseInt[chan]);
+            else
+            {
+                m_repetitions[chan] = 1;
+                m_trainDuration[chan] = m_phaseDuration[chan];
+            }
         else
-            m_repetitions[chan] = int((m_trainDuration[chan]-(2*m_phaseDuration[chan] + m_interPhaseInt[chan]))
+            if (int((m_trainDuration[chan]-(2*m_phaseDuration[chan] + m_interPhaseInt[chan]))
+                    /m_interPulseInt[chan]) >= 1)
+                m_repetitions[chan] = int((m_trainDuration[chan]-(2*m_phaseDuration[chan] + m_interPhaseInt[chan]))
                                       /m_interPulseInt[chan]);
+            else
+            {
+                m_repetitions[chan] = 1;
+                m_trainDuration[chan] = 2*m_phaseDuration[chan] + m_interPhaseInt[chan];
+            }
     }
 }
 
@@ -318,7 +341,7 @@ void TrackerStimulator::process(AudioSampleBuffer& buffer, MidiBuffer& events)
                 int cirlceIn = isPositionWithinCircles(m_x, m_y);
                 float dist = m_circles[cirlceIn].distanceFromCenter(m_x, m_y);
 
-                float freq_gauss = m_stimFreq[m_chan]*std::exp(dist/(2*pow(m_stimSD[m_chan],2)));
+                float freq_gauss = m_stimFreq[m_chan]*std::exp(-pow(dist,2)/(2*pow(m_stimSD[m_chan],2)));
                 stim_interval = float(1/freq_gauss);
             }
 

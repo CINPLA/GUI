@@ -333,6 +333,13 @@ void TrackerStimulatorCanvas::buttonClicked(Button* button)
             processor->setIsBiphasic(processor->getChan(), false);
 
         // update train duration/repetition
+        if (!processor->checkParameterConsistency(processor->getChan()))
+        {
+            trainDurationEditLabel->setText(String(processor->getTrainDuration(processor->getChan())), dontSendNotification);
+            interpulseEditLabel->setText(String(processor->getInterPulseInt(processor->getChan())), dontSendNotification);
+            processor->setRepetitions(processor->getChan(), 1);
+            repetitionsEditLabel->setText(String(1), dontSendNotification);
+        }
         processor->setRepetitionsTrainDuration(processor->getChan(), processor->REPFIRST);
         uploadInfoOnLoad();
     }
@@ -832,7 +839,7 @@ void TrackerStimulatorCanvas::labelTextChanged(Label *label)
     }
     if (label == phaseEditLabel)
     {
-        // 100 - 3600*10e6 (3600 s)
+        // 100 - 3600*10e3 (3600 s)
         Value val = label->getTextValue();
         float value = float(my_round(float(val.getValue())*10) / 10); //only multiple of 100us
         if ((float(val.getValue())>=0 && int(val.getValue())<=3600*10e3))
@@ -842,9 +849,12 @@ void TrackerStimulatorCanvas::labelTextChanged(Label *label)
             if (!processor->checkParameterConsistency(processor->getChan()))
             {
                 CoreServices::sendStatusMessage("Inconsistent Values!");
-                processor->setPhaseDuration(processor->getChan(), DEF_INTER_PHASE);
-                label->setText("", dontSendNotification);
+                //if values are inconsestent here phase is  > interpulse or trainduration
+                processor->setRepetitions(processor->getChan(), 1);
+                repetitionsEditLabel->setText(String(1), dontSendNotification);
             }
+            trainDurationEditLabel->setText(String(processor->getTrainDuration(processor->getChan())), dontSendNotification);
+            interpulseEditLabel->setText(String(processor->getInterPulseInt(processor->getChan())), dontSendNotification);
         }
         else
         {
@@ -939,15 +949,16 @@ void TrackerStimulatorCanvas::labelTextChanged(Label *label)
         if (int(val.getValue())>=1)
         {
             processor->setTrainDuration(processor->getChan(), value);
-            label->setText(String(value), dontSendNotification);
+
             processor->setRepetitionsTrainDuration(processor->getChan(), processor->TRAINFIRST);
             repetitionsEditLabel->setText(String(processor->getRepetitions(processor->getChan())), dontSendNotification);
             if (!processor->checkParameterConsistency(processor->getChan()))
             {
                 CoreServices::sendStatusMessage("Inconsistent Values!");
-                processor->setTrainDuration(processor->getChan(), DEF_TRAINDURATION);
+                //processor->setTrainDuration(processor->getChan(), DEF_TRAINDURATION);
                 label->setText("", dontSendNotification);
             }
+            label->setText(String(processor->getTrainDuration(processor->getChan())), dontSendNotification);
         }
         else
         {
@@ -1335,13 +1346,10 @@ DisplayAxes::DisplayAxes(TrackerStimulator* trackerStimulator, TrackerStimulator
     , m_copy (false)
 
 {
-    // *** Add: 1) delete circle with delete button / copy / paste
-
     xlims[0] = getBounds().getRight() - getWidth();
     xlims[1] = getBounds().getRight();
     ylims[0] = getBounds().getBottom() - getHeight();
     ylims[1] = getBounds().getBottom();
-
 }
 
 DisplayAxes::~DisplayAxes(){}
@@ -1393,7 +1401,7 @@ void DisplayAxes::paint(Graphics& g){
                             g.setColour(selectedCircleColour);
                         else
                         {
-                            ColourGradient Cgrad = ColourGradient(Colours::red, double(x_c), double(y_c),
+                            ColourGradient Cgrad = ColourGradient(Colours::darkmagenta, double(x_c), double(y_c),
                                                                   Colours::yellow, double(x_c+radx), double(y_c+rady), true);
                             g.setGradientFill(Cgrad);
                         }
@@ -1459,7 +1467,7 @@ void DisplayAxes::paint(Graphics& g){
             g.setColour(unselectedCircleColour);
         else
         {
-            ColourGradient Cgrad = ColourGradient(Colours::red, double(x_c), double(y_c),
+            ColourGradient Cgrad = ColourGradient(Colours::darkmagenta, double(x_c), double(y_c),
                                                   Colours::yellow, double(x_c+radx), double(y_c+rady), true);
             g.setGradientFill(Cgrad);
         }
