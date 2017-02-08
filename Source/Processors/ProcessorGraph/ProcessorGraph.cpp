@@ -546,11 +546,6 @@ GenericProcessor* ProcessorGraph::createProcessorFromDescription(String& descrip
             processor = new FileReader();
             std::cout << "Creating a new file reader." << std::endl;
         }
-        else if (subProcessorType.equalsIgnoreCase("OSC Port"))
-        {
-            processor = new OscNode();
-            std::cout << "Creating a new OSC port." << std::endl;
-        }
         else if (subProcessorType.equalsIgnoreCase("Serial Port"))
         {
             processor = new SerialInput();
