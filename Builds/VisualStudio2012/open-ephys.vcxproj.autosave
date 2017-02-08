@@ -88,8 +88,13 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+<<<<<<< HEAD
+      <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules;../../Resources/windows-libs/HDF5/include;../../Resources/windows-libs/ZeroMQ/include;../../Libraries/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;DEBUG;_DEBUG;NOMINMAX;ZEROMQ;JUCER_VS2012_78A501F=1;JUCE_APP_VERSION=0.3.5;JUCE_APP_VERSION_HEX=0x305;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+=======
       <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules;../../Resources/windows-libs/HDF5/include;../../Resources/windows-libs/ZeroMQ/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;DEBUG;_DEBUG;NOMINMAX;ZEROMQ;JUCER_VS2012_78A501F=1;JUCE_APP_VERSION=0.3.6;JUCE_APP_VERSION_HEX=0x306;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+>>>>>>> 41ef40bd1268cb1f314d6abf5e295224341c294c
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader/>
@@ -134,8 +139,13 @@
     </Midl>
     <ClCompile>
       <Optimization>Full</Optimization>
+<<<<<<< HEAD
+      <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules;../../Resources/windows-libs/HDF5/include;../../Resources/windows-libs/ZeroMQ/include;../../Libraries/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;NOMINMAX;ZEROMQ;JUCER_VS2012_78A501F=1;JUCE_APP_VERSION=0.3.5;JUCE_APP_VERSION_HEX=0x305;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+=======
       <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules;../../Resources/windows-libs/HDF5/include;../../Resources/windows-libs/ZeroMQ/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;NOMINMAX;ZEROMQ;JUCER_VS2012_78A501F=1;JUCE_APP_VERSION=0.3.6;JUCE_APP_VERSION_HEX=0x306;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+>>>>>>> 41ef40bd1268cb1f314d6abf5e295224341c294c
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader/>
@@ -182,8 +192,13 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+<<<<<<< HEAD
+      <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules;../../Resources/windows-libs/HDF5/include;../../Resources/windows-libs/ZeroMQ/include;../../Libraries/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;DEBUG;_DEBUG;NOMINMAX;ZEROMQ;JUCER_VS2012_78A501F=1;JUCE_APP_VERSION=0.3.5;JUCE_APP_VERSION_HEX=0x305;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+=======
       <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules;../../Resources/windows-libs/HDF5/include;../../Resources/windows-libs/ZeroMQ/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;DEBUG;_DEBUG;NOMINMAX;ZEROMQ;JUCER_VS2012_78A501F=1;JUCE_APP_VERSION=0.3.6;JUCE_APP_VERSION_HEX=0x306;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+>>>>>>> 41ef40bd1268cb1f314d6abf5e295224341c294c
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader/>
@@ -226,8 +241,13 @@
     </Midl>
     <ClCompile>
       <Optimization>Full</Optimization>
+<<<<<<< HEAD
+      <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules;../../Resources/windows-libs/HDF5/include;../../Resources/windows-libs/ZeroMQ/include;../../Libraries/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;NOMINMAX;ZEROMQ;JUCER_VS2012_78A501F=1;JUCE_APP_VERSION=0.3.5;JUCE_APP_VERSION_HEX=0x305;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+=======
       <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules;../../Resources/windows-libs/HDF5/include;../../Resources/windows-libs/ZeroMQ/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;NOMINMAX;ZEROMQ;JUCER_VS2012_78A501F=1;JUCE_APP_VERSION=0.3.6;JUCE_APP_VERSION_HEX=0x306;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+>>>>>>> 41ef40bd1268cb1f314d6abf5e295224341c294c
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader/>
@@ -267,17 +287,6 @@
     <ClCompile Include="..\..\Source\AccessClass.cpp"/>
     <ClCompile Include="..\..\Source\Network\PracticalSocket.cpp"/>
     <ClCompile Include="..\..\Source\Audio\AudioComponent.cpp"/>
-    <ClCompile Include="..\..\Source\Processors\TrackerStimulator\TrackerStimulator.cpp"/>
-    <ClCompile Include="..\..\Source\Processors\TrackerStimulator\TrackerStimulatorCanvas.cpp"/>
-    <ClCompile Include="..\..\Source\Processors\TrackerStimulator\TrackerStimulatorEditor.cpp"/>
-    <ClCompile Include="..\..\Source\Processors\SpikePositionNode\SpikePositionEditor.cpp"/>
-    <ClCompile Include="..\..\Source\Processors\SpikePositionNode\SpikePositionNode.cpp"/>
-    <ClCompile Include="..\..\Source\Processors\OscNode\OscEditor.cpp"/>
-    <ClCompile Include="..\..\Source\Processors\OscNode\OscNode.cpp"/>
-    <ClCompile Include="..\..\Source\Processors\OscNode\OscServer.cpp"/>
-    <ClCompile Include="..\..\Source\Processors\PositionTracker\PositionTrackerCanvas.cpp"/>
-    <ClCompile Include="..\..\Source\Processors\PositionTracker\PositionTrackerEditor.cpp"/>
-    <ClCompile Include="..\..\Source\Processors\PositionTracker\PositionTracker.cpp"/>
     <ClCompile Include="..\..\Source\Processors\Rectifier\Rectifier.cpp"/>
     <ClCompile Include="..\..\Source\Processors\ArduinoOutput\ArduinoOutput.cpp"/>
     <ClCompile Include="..\..\Source\Processors\ArduinoOutput\ArduinoOutputEditor.cpp"/>
@@ -1527,17 +1536,6 @@
     <ClInclude Include="..\..\Source\AccessClass.h"/>
     <ClInclude Include="..\..\Source\Network\PracticalSocket.h"/>
     <ClInclude Include="..\..\Source\Audio\AudioComponent.h"/>
-    <ClInclude Include="..\..\Source\Processors\TrackerStimulator\TrackerStimulator.h"/>
-    <ClInclude Include="..\..\Source\Processors\TrackerStimulator\TrackerStimulatorCanvas.h"/>
-    <ClInclude Include="..\..\Source\Processors\TrackerStimulator\TrackerStimulatorEditor.h"/>
-    <ClInclude Include="..\..\Source\Processors\SpikePositionNode\SpikePositionEditor.h"/>
-    <ClInclude Include="..\..\Source\Processors\SpikePositionNode\SpikePositionNode.h"/>
-    <ClInclude Include="..\..\Source\Processors\OscNode\OscEditor.h"/>
-    <ClInclude Include="..\..\Source\Processors\OscNode\OscNode.h"/>
-    <ClInclude Include="..\..\Source\Processors\OscNode\OscServer.h"/>
-    <ClInclude Include="..\..\Source\Processors\PositionTracker\PositionTrackerCanvas.h"/>
-    <ClInclude Include="..\..\Source\Processors\PositionTracker\PositionTrackerEditor.h"/>
-    <ClInclude Include="..\..\Source\Processors\PositionTracker\PositionTracker.h"/>
     <ClInclude Include="..\..\Source\Processors\Rectifier\Rectifier.h"/>
     <ClInclude Include="..\..\Source\Processors\ArduinoOutput\ArduinoOutput.h"/>
     <ClInclude Include="..\..\Source\Processors\ArduinoOutput\ArduinoOutputEditor.h"/>

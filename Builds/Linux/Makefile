@@ -55,17 +55,6 @@ OBJECTS := \
   $(OBJDIR)/AccessClass_de9602d5.o \
   $(OBJDIR)/PracticalSocket_2574ecc8.o \
   $(OBJDIR)/AudioComponent_521bd9c9.o \
-  $(OBJDIR)/TrackerStimulator_fd06aa0.o \
-  $(OBJDIR)/TrackerStimulatorCanvas_534f73d8.o \
-  $(OBJDIR)/TrackerStimulatorEditor_9f530d6d.o \
-  $(OBJDIR)/SpikePositionEditor_a9b0ed59.o \
-  $(OBJDIR)/SpikePositionNode_ba38a92e.o \
-  $(OBJDIR)/OscEditor_2185e39.o \
-  $(OBJDIR)/OscNode_ad86d20e.o \
-  $(OBJDIR)/OscServer_f207910f.o \
-  $(OBJDIR)/PositionTrackerCanvas_65702c22.o \
-  $(OBJDIR)/PositionTrackerEditor_b173c5b7.o \
-  $(OBJDIR)/PositionTracker_95cba26a.o \
   $(OBJDIR)/Rectifier_21cc94b6.o \
   $(OBJDIR)/ArduinoOutput_d5a968de.o \
   $(OBJDIR)/ArduinoOutputEditor_e1b7e52b.o \
@@ -238,61 +227,6 @@ $(OBJDIR)/PracticalSocket_2574ecc8.o: ../../Source/Network/PracticalSocket.cpp
 $(OBJDIR)/AudioComponent_521bd9c9.o: ../../Source/Audio/AudioComponent.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling AudioComponent.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/TrackerStimulator_fd06aa0.o: ../../Source/Processors/TrackerStimulator/TrackerStimulator.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling TrackerStimulator.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/TrackerStimulatorCanvas_534f73d8.o: ../../Source/Processors/TrackerStimulator/TrackerStimulatorCanvas.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling TrackerStimulatorCanvas.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/TrackerStimulatorEditor_9f530d6d.o: ../../Source/Processors/TrackerStimulator/TrackerStimulatorEditor.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling TrackerStimulatorEditor.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/SpikePositionEditor_a9b0ed59.o: ../../Source/Processors/SpikePositionNode/SpikePositionEditor.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling SpikePositionEditor.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/SpikePositionNode_ba38a92e.o: ../../Source/Processors/SpikePositionNode/SpikePositionNode.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling SpikePositionNode.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/OscEditor_2185e39.o: ../../Source/Processors/OscNode/OscEditor.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling OscEditor.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/OscNode_ad86d20e.o: ../../Source/Processors/OscNode/OscNode.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling OscNode.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/OscServer_f207910f.o: ../../Source/Processors/OscNode/OscServer.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling OscServer.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/PositionTrackerCanvas_65702c22.o: ../../Source/Processors/PositionTracker/PositionTrackerCanvas.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling PositionTrackerCanvas.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/PositionTrackerEditor_b173c5b7.o: ../../Source/Processors/PositionTracker/PositionTrackerEditor.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling PositionTrackerEditor.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/PositionTracker_95cba26a.o: ../../Source/Processors/PositionTracker/PositionTracker.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling PositionTracker.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/Rectifier_21cc94b6.o: ../../Source/Processors/Rectifier/Rectifier.cpp

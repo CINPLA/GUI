@@ -55,10 +55,6 @@
 #include "../PSTH/PeriStimulusTimeHistogramNode.h"
 #include "../CAR/CAR.h"
 #include "../Rectifier/Rectifier.h"
-#include "../OscNode/OscNode.h"
-#include "../PositionTracker/PositionTracker.h"
-#include "../SpikePositionNode/SpikePositionNode.h"
-#include "../TrackerStimulator/TrackerStimulator.h"
 
     
 ProcessorGraph::ProcessorGraph() : currentNodeId(100)
