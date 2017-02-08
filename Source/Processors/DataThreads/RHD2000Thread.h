@@ -25,7 +25,6 @@
 #ifndef __RHD2000THREAD_H_2C4CBD67__
 #define __RHD2000THREAD_H_2C4CBD67__
 
-
 #include "../../../JuceLibraryCode/JuceHeader.h"
 
 #include <stdio.h>
@@ -43,7 +42,6 @@
 #define MAX_NUM_DATA_STREAMS_USB3 16
 #define MAX_NUM_HEADSTAGES 8
 
-#define MAX_NUM_DATA_STREAMS(u3) (u3 ? MAX_NUM_DATA_STREAMS_USB3 : MAX_NUM_DATA_STREAMS_USB2)
 #define MAX_NUM_CHANNELS MAX_NUM_DATA_STREAMS_USB3*35
 
 class SourceNode;
@@ -131,6 +129,7 @@ public:
 
 	void runImpedanceTest(ImpedanceData* data);
 	void enableBoardLeds(bool enable);
+	int setClockDivider(int divide_ratio);
 
 private:
 
@@ -208,6 +207,9 @@ private:
     bool newScan;
 	ScopedPointer<RHDImpedanceMeasure> impedanceThread;
 	bool ledsEnabled;
+
+    // Sync ouput divide factor
+    uint16 clockDivideFactor;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(RHD2000Thread);
 };

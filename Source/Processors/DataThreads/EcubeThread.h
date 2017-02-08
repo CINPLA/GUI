@@ -35,13 +35,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "DataThread.h"
 #include "../GenericProcessor/GenericProcessor.h"
 
-#define MAX_NUM_DATA_STREAMS 8
-
 class SourceNode;
 
 #if JUCE_WINDOWS
 #ifdef ECUBE_SUPPORT
-#define ECUBE_COMPILE
+#define ECUBE_COMPILE 1
 #endif
 #endif
 
