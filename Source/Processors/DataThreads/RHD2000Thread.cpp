@@ -308,7 +308,9 @@ bool RHD2000Thread::uploadBitfile(String bitfilename)
 
         bool response = AlertWindow::showOkCancelBox(AlertWindow::NoIcon,
                                                      "FPGA bitfile not found.",
-                                                     "The rhd2000.bit file was not found in the directory of the executable. Would you like to browse for it?",
+                                                     (evalBoard->isUSB3() ? 
+													 "The rhd2000_usb3.bit file was not found in the directory of the executable. Would you like to browse for it?" :
+													 "The rhd2000.bit file was not found in the directory of the executable. Would you like to browse for it?"),
                                                      "Yes", "No", 0, 0);
         if (response)
         {
@@ -1485,7 +1487,7 @@ bool RHD2000Thread::stopAcquisition()
 
 bool RHD2000Thread::updateBuffer()
 {
-	int chOffset;
+	//int chOffset;
 	unsigned char* bufferPtr;
     //cout << "Number of 16-bit words in FIFO: " << evalBoard->numWordsInFifo() << endl;
     //cout << "Block size: " << blockSize << endl;
@@ -1708,6 +1710,7 @@ bool RHD2000Thread::updateBuffer()
         evalBoard->setDacHighpassFilter(desiredDAChpf);
         evalBoard->enableDacHighpassFilter(desiredDAChpfState);
 		evalBoard->enableBoardLeds(ledsEnabled);
+        evalBoard->setClockDivider(clockDivideFactor);
 
         dacOutputShouldChange = false;
     }
@@ -1817,6 +1820,31 @@ void RHD2000Thread::enableBoardLeds(bool enable)
 		dacOutputShouldChange = true;
 	else
 		evalBoard->enableBoardLeds(enable);
+}
+
+int RHD2000Thread::setClockDivider(int divide_ratio)
+{
+    
+    // Divide ratio should be 1 or an even number
+    if (divide_ratio != 1 && divide_ratio % 2) 
+        divide_ratio--;
+
+    // Format the divide ratio from its true value to the 
+    // format required by the firmware
+    // Ratio    N
+    // 1        0
+    // >=2      Ratio/2
+    if (divide_ratio == 1)
+        clockDivideFactor = 0;
+    else
+        clockDivideFactor = static_cast<uint16>(divide_ratio/2);
+
+	if (isAcquisitionActive())
+        dacOutputShouldChange = true;
+    else 
+        evalBoard->setClockDivider(clockDivideFactor);
+
+    return divide_ratio;
 }
 
 void RHD2000Thread::runImpedanceTest(ImpedanceData* data)
