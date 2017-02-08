@@ -295,30 +295,6 @@
               file="Source/Audio/AudioComponent.h"/>
       </GROUP>
       <GROUP id="yQmqZWk" name="Processors">
-        <GROUP id="{FED4E063-62E1-4EF4-F75B-3AC03D2D1826}" name="TrackerStimulator">
-          <FILE id="tZzyG7" name="TrackerStimulator.cpp" compile="1" resource="0"
-                file="Source/Processors/TrackerStimulator/TrackerStimulator.cpp"/>
-          <FILE id="a1VFGh" name="TrackerStimulator.h" compile="0" resource="0"
-                file="Source/Processors/TrackerStimulator/TrackerStimulator.h"/>
-          <FILE id="nIH2Mw" name="TrackerStimulatorCanvas.cpp" compile="1" resource="0"
-                file="Source/Processors/TrackerStimulator/TrackerStimulatorCanvas.cpp"/>
-          <FILE id="xqCmFU" name="TrackerStimulatorCanvas.h" compile="0" resource="0"
-                file="Source/Processors/TrackerStimulator/TrackerStimulatorCanvas.h"/>
-          <FILE id="A9dpi3" name="TrackerStimulatorEditor.cpp" compile="1" resource="0"
-                file="Source/Processors/TrackerStimulator/TrackerStimulatorEditor.cpp"/>
-          <FILE id="lRMXWf" name="TrackerStimulatorEditor.h" compile="0" resource="0"
-                file="Source/Processors/TrackerStimulator/TrackerStimulatorEditor.h"/>
-        </GROUP>
-        <GROUP id="{C99E3A4A-3AA3-57B1-8E38-B023AB4E6D9B}" name="SpikePositionNode">
-          <FILE id="kvtWxb" name="SpikePositionEditor.cpp" compile="1" resource="0"
-                file="Source/Processors/SpikePositionNode/SpikePositionEditor.cpp"/>
-          <FILE id="belkvz" name="SpikePositionEditor.h" compile="0" resource="0"
-                file="Source/Processors/SpikePositionNode/SpikePositionEditor.h"/>
-          <FILE id="K5h36o" name="SpikePositionNode.cpp" compile="1" resource="0"
-                file="Source/Processors/SpikePositionNode/SpikePositionNode.cpp"/>
-          <FILE id="XFopdc" name="SpikePositionNode.h" compile="0" resource="0"
-                file="Source/Processors/SpikePositionNode/SpikePositionNode.h"/>
-        </GROUP>
         <GROUP id="{01C8D4B9-6D75-255D-B464-C93D4683C411}" name="OscNode">
           <FILE id="sR1w6E" name="OscEditor.cpp" compile="1" resource="0" file="Source/Processors/OscNode/OscEditor.cpp"/>
           <FILE id="bSE1P0" name="OscEditor.h" compile="0" resource="0" file="Source/Processors/OscNode/OscEditor.h"/>
