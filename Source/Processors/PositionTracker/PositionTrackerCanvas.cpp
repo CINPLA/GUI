@@ -66,7 +66,7 @@ void PositionTrackerCanvas::paint (Graphics& g)
         if(x != x || y != y) { // is it nan?
             continue;
         }
-        g.drawLine(x_prev, y_prev, x, y, 1.0f);
+        g.drawLine(x_prev, y_prev, x, y, 2.0f);
 
         g.setFont(Font("Default", 16, Font::plain));
 

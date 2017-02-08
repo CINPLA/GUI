@@ -96,6 +96,7 @@ ProcessorList::ProcessorList()
     sinks->addSubItem(new ProcessorListItem("Event Broadcaster"));
 #endif
 
+
     ProcessorListItem* utilities = new ProcessorListItem("Utilities");
     utilities->addSubItem(new ProcessorListItem("Splitter"));
     utilities->addSubItem(new ProcessorListItem("Merger"));
